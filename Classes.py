@@ -17,6 +17,7 @@ class Player():
         self.rect = rect
         self.grau = 0
         self.passo = 1
+        self.vel = 2
 
     def setPosition(self, position):
         self.position = position
@@ -27,16 +28,21 @@ class Player():
     def setRect(self, rect):
         self.rect = rect
 
-    def rotateCenter(self, angle):
-        loc = self.img.get_rect().center
-        rot_sprite = pygame.transform.rotate(self.img, angle)
-        rot_sprite.get_rect().center = loc
-        self.setImage(rot_sprite)
-        self.setRect(rot_sprite.get_rect())
+    def moveUp(self):
+        self.setPosition((self.position[0], self.position[1]-self.vel))
+        
+    def moveDown(self):
+        self.setPosition((self.position[0], self.position[1]+self.vel))
+
+    def moveRight(self):
+        self.setPosition((self.position[0]+self.vel, self.position[1]))
+
+    def moveLeft(self):
+        self.setPosition((self.position[0]-self.vel, self.position[1]))
 
 class Shot():
 
-    def __init__(self, position, eixo):
+    def __init__(self, position, eixo, vel):
         self.position = position
         self.eixo = eixo
         if eixo == 'x':
@@ -45,7 +51,7 @@ class Shot():
         else:
             self.img = pygame.image.load('sprites_player/shotY.png')
             self.rect = (0, 0, 30, 9)
-        self.vel = 20
+        self.vel = vel * 10
 
     def move(self):
         if self.eixo == 'x':
@@ -63,62 +69,62 @@ player1 = Player((500-70/2, 350-70/2), img_player, (0, 0, 70, 70))
 inGame = True
 
 shots = []
+image = pygame.image.load('sprites_player/sprite' + str(player1.passo) + '_player_' + str(player1.grau) + '.jpg')
 
 while inGame:
+    pygame.time.Clock().tick(60)
     screen.fill((255, 255, 255))
+
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_UP]:
+        player1.grau = 0
+        player1.moveUp()
+        player1.passo += 1
+    elif keys[pygame.K_DOWN]:
+        player1.grau = 180
+        player1.moveDown()
+        player1.passo += 1
+    elif keys[pygame.K_RIGHT]:
+        player1.grau = 90
+        player1.moveRight()
+        player1.passo += 1
+    elif keys[pygame.K_LEFT]:
+        player1.grau = 270
+        player1.moveLeft()
+        player1.passo += 1
     
     for event in pygame.event.get():
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_UP:
+            if event.key == pygame.K_SPACE:
                 if player1.grau == 0:
-                    player1.setPosition((player1.position[0], player1.position[1]-10))
-                elif player1.grau == 90:
-                    player1.setPosition((player1.position[0]+10, player1.position[1]))
+                    shots.append(Shot((player1.position[0]+40, player1.position[1]), 'y', -1))
                 elif player1.grau == 180:
-                    player1.setPosition((player1.position[0], player1.position[1]+10))
-                elif player1.grau == 270:
-                    player1.setPosition((player1.position[0]-10, player1.position[1]))
-                player1.passo += 1
-            elif event.key == pygame.K_DOWN:
-                if player1.grau == 0:
-                    player1.setPosition((player1.position[0], player1.position[1]+10))
+                    shots.append(Shot((player1.position[0]+20, player1.position[1]), 'y',  1)) 
                 elif player1.grau == 90:
-                    player1.setPosition((player1.position[0]-10, player1.position[1]))
-                elif player1.grau == 180:
-                    player1.setPosition((player1.position[0], player1.position[1]-10))
-                elif player1.grau == 270:
-                    player1.setPosition((player1.position[0]+10, player1.position[1]))
-                player1.passo -= 1
-            elif event.key == pygame.K_RIGHT:
-                #player1.setPosition((player1.position[0]+10, player1.position[1]))
-                player1.grau += 90
-            elif event.key == pygame.K_LEFT:
-                #player1.setPosition((player1.position[0]-10, player1.position[1]))
-                player1.grau -= 90
-            elif event.key == pygame.K_SPACE:
-                if player1.grau == 0 or player1.grau == 180:
-                    shots.append(Shot(player1.position, 'y'))
+                    shots.append(Shot((player1.position[0], player1.position[1]+40), 'x',  1))
                 else:
-                    shots.append(Shot(player1.position, 'x'))
+                    shots.append(Shot((player1.position[0], player1.position[1]+20), 'x', -1))
+            print(len(shots))
 
-            for shot in shots:
-                shot.move()
-                if shot.position[0] > 1000 or shot.position[0] < 0:
-                    shots.remove(shot)
-                elif shot.position[1] > 700 or shot.position[1] < 0:
-                    shots.remove(shot)
+    if player1.grau >= 360:
+        player1.grau = 0
+    if player1.grau < 0:
+        player1.grau = 360 + player1.grau
 
-            if player1.grau >= 360:
-                player1.grau = 0
-            if player1.grau < 0:
-                player1.grau = 360 + player1.grau
-            if player1.passo > 3:
-                player1.passo = 1
-            if player1.passo < 1:
-                player1.passo = 3
-            player1.setImage(pygame.image.load('sprites_player/sprite' + str(player1.passo) + '_player_' + str(player1.grau) + '.jpg'))
-                   
+    if player1.passo > 3:
+        player1.passo = 1
+        
+    image = pygame.image.load('sprites_player/sprite' + str(player1.passo) + '_player_' + str(player1.grau) + '.jpg')
+        
+    player1.setImage(image)
+
+    for shot in shots:
+        shot.move()
+        screen.blit(shot.img, shot.position, shot.rect)
+        if shot.position[0] > 1000 or shot.position[0] < 0:
+            shots.remove(shot)
+        elif shot.position[1] > 700 or shot.position[1] < 0:
+            shots.remove(shot)
+                    
     screen.blit(player1.img, player1.position, player1.rect)
     pygame.display.update()
-
-clock.tick(60)
