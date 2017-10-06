@@ -1,5 +1,6 @@
 import pygame
 import math
+import random as rd
 
 class Monster():
 
@@ -27,8 +28,8 @@ class Player():
         self.rect = rect
         self.grau = 0
         self.passo = 1
-        self.vel = 2
-
+        self.vel = 3
+  
     def setPosition(self, position):
         self.position = position
 
@@ -75,7 +76,13 @@ screen.fill((255, 255, 255))
 
 img_player = pygame.image.load('sprites_player/sprite1_player_0.jpg')
 player1 = Player((500-70/2, 350-70/2), img_player, (0, 0, 70, 70))
-monster = Monster((0, 0), pygame.image.load('poring.png'), (0, 0, 70, 70))
+monsters = []
+
+for i in range(2):
+    monsters.append(Monster((rd.randint(-50, -30), rd.randint(30, 670)), pygame.image.load('poring.png'), (0, 0, 70, 70)))
+    monsters.append(Monster((rd.randint(30, 970), rd.randint(-50, -30)), pygame.image.load('poring.png'), (0, 0, 70, 70)))
+    monsters.append(Monster((rd.randint(1030, 1050), rd.randint(30, 670)), pygame.image.load('poring.png'), (0, 0, 70, 70)))
+    monsters.append(Monster((rd.randint(30, 970), rd.randint(730, 750)), pygame.image.load('poring.png'), (0, 0, 70, 70)))
 
 inGame = True
 
@@ -128,7 +135,9 @@ while inGame:
     image = pygame.image.load('sprites_player/sprite' + str(player1.passo) + '_player_' + str(player1.grau) + '.jpg')
         
     player1.setImage(image)
-    monster.move(player1)
+    for monster in monsters:
+        monster.move(player1)
+        screen.blit(monster.img, monster.position, monster.rect)
 
     for shot in shots:
         shot.move()
@@ -139,5 +148,5 @@ while inGame:
             shots.remove(shot)
                     
     screen.blit(player1.img, player1.position, player1.rect)
-    screen.blit(monster.img, monster.position, monster.rect)
+    
     pygame.display.update()
