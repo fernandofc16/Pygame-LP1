@@ -3,11 +3,21 @@ import math
 
 class Monster():
 
-    def __init__(self, posx, posy, img, rect):
-        self.posx = posx
-        self.posy = posy
+    def __init__(self, position, img, rect):
+        self.position = position
         self.img = img
         self.rect = rect
+        self.vel = 1
+
+    def move(self, player):
+        if player.position[0] > self.position[0]:
+            self.position = (self.position[0]+self.vel, self.position[1])
+        if player.position[0] < self.position[0]:
+            self.position = (self.position[0]-self.vel, self.position[1])
+        if player.position[1] > self.position[1]:
+            self.position = (self.position[0], self.position[1]+self.vel)
+        if player.position[1] < self.position[1]:
+            self.position = (self.position[0], self.position[1]-self.vel)
 
 class Player():
 
@@ -65,6 +75,7 @@ screen.fill((255, 255, 255))
 
 img_player = pygame.image.load('sprites_player/sprite1_player_0.jpg')
 player1 = Player((500-70/2, 350-70/2), img_player, (0, 0, 70, 70))
+monster = Monster((0, 0), pygame.image.load('poring.png'), (0, 0, 70, 70))
 
 inGame = True
 
@@ -117,6 +128,7 @@ while inGame:
     image = pygame.image.load('sprites_player/sprite' + str(player1.passo) + '_player_' + str(player1.grau) + '.jpg')
         
     player1.setImage(image)
+    monster.move(player1)
 
     for shot in shots:
         shot.move()
@@ -127,4 +139,5 @@ while inGame:
             shots.remove(shot)
                     
     screen.blit(player1.img, player1.position, player1.rect)
+    screen.blit(monster.img, monster.position, monster.rect)
     pygame.display.update()
