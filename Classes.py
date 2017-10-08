@@ -97,7 +97,7 @@ pygame.init()
 screen = pygame.display.set_mode((1000, 700))
 screen.fill((255, 255, 255))
 
-img_player = pygame.image.load('sprites_player/sprite1_player_0.jpg')
+img_player = pygame.image.load('sprites_player/sprite1_player_0.png')
 player1 = Player((500-70/2, 350-70/2), img_player)
 monsters = []
 
@@ -111,7 +111,7 @@ inGame = True
 win = False
 
 shots = []
-image = pygame.image.load('sprites_player/sprite' + str(player1.passo) + '_player_' + str(player1.grau) + '.jpg')
+image = pygame.image.load('sprites_player/sprite' + str(player1.passo) + '_player_' + str(player1.grau) + '.png')
 
 while inGame:
     pygame.time.Clock().tick(25)
@@ -156,7 +156,7 @@ while inGame:
     if player1.passo > 3:
         player1.passo = 1
         
-    image = pygame.image.load('sprites_player/sprite' + str(player1.passo) + '_player_' + str(player1.grau) + '.jpg')      
+    image = pygame.image.load('sprites_player/sprite' + str(player1.passo) + '_player_' + str(player1.grau) + '.png')      
     player1.setImage(image)
 
     for shot in shots:
