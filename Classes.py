@@ -2,6 +2,9 @@ import pygame
 import math
 import random as rd
 
+SCREEN_HEIGHT = 700
+SCREEN_WIDTH = 1000
+
 class Monster():
 
     def __init__(self, position, img_left, img_right):
@@ -57,20 +60,24 @@ class Player():
         self.rect = rect
 
     def moveUp(self):
-        self.setPosition((self.position[0], self.position[1]-self.vel))
-        self.rect.y -= self.vel
+        if self.position[1] > 0:
+            self.setPosition((self.position[0], self.position[1]-self.vel))
+            self.rect.y -= self.vel
         
     def moveDown(self):
-        self.setPosition((self.position[0], self.position[1]+self.vel))
-        self.rect.y += self.vel
+        if self.position[1] < SCREEN_HEIGHT - self.img.get_height():
+            self.setPosition((self.position[0], self.position[1]+self.vel))
+            self.rect.y += self.vel
 
     def moveRight(self):
-        self.setPosition((self.position[0]+self.vel, self.position[1]))
-        self.rect.x += self.vel
+        if self.position[0] < SCREEN_WIDTH - self.img.get_width():
+            self.setPosition((self.position[0]+self.vel, self.position[1]))
+            self.rect.x += self.vel
 
     def moveLeft(self):
-        self.setPosition((self.position[0]-self.vel, self.position[1]))
-        self.rect.x -= self.vel
+        if self.position[0] > 0:
+            self.setPosition((self.position[0]-self.vel, self.position[1]))
+            self.rect.x -= self.vel
 
     def is_collided_with(self, sprite):
         return self.rect.colliderect(sprite.rect)
@@ -112,7 +119,7 @@ class Shot():
         return self.rect.colliderect(sprite.rect)
 
 pygame.init()
-screen = pygame.display.set_mode((1000, 700))
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 screen.fill((255, 255, 255))
 
 img_player = pygame.image.load('sprites_player/sprite1_player_0.png')
@@ -168,7 +175,6 @@ while inGame:
                     shots.append(Shot((player1.position[0], player1.position[1]+40), 'x',  1))
                 else:
                     shots.append(Shot((player1.position[0], player1.position[1]+20), 'x', -1))
-            print(len(shots))
 
     if player1.grau >= 360:
         player1.grau = 0
@@ -184,9 +190,9 @@ while inGame:
     for shot in shots:
         shot.move()
         screen.blit(shot.img, shot.position)
-        if shot.position[0] > 1000 or shot.position[0] < 0:
+        if shot.position[0] > SCREEN_WIDTH or shot.position[0] < 0:
             shots.remove(shot)
-        elif shot.position[1] > 700 or shot.position[1] < 0:
+        elif shot.position[1] > SCREEN_HEIGHT or shot.position[1] < 0:
             shots.remove(shot)
     
     for monster in monsters:
