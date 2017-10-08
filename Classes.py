@@ -34,6 +34,8 @@ class Player():
         self.passo = 1
         self.vel = 7
         self.life = 3
+        self.heartText = pygame.font.SysFont('arial', 30).render("Life: ", True, (0, 0, 0))
+        self.heartImage = pygame.image.load('sprites_player/heart.png')
   
     def setPosition(self, position):
         self.position = position
@@ -69,6 +71,12 @@ class Player():
     def isPlayerDead(self):
         return self.life <= 0
 
+    def showLife(self, screen):
+        screen.blit(self.heartText, (7, 7))
+        for i in range(1, self.life+1):
+            screen.blit(self.heartImage, (20 + 40*i, 10))
+            
+
 class Shot():
 
     def __init__(self, position, eixo, vel):
@@ -99,6 +107,7 @@ screen.fill((255, 255, 255))
 
 img_player = pygame.image.load('sprites_player/sprite1_player_0.png')
 player1 = Player((500-70/2, 350-70/2), img_player)
+
 monsters = []
 
 for i in range(2):
@@ -187,6 +196,7 @@ while inGame:
         inGame = False
                     
     screen.blit(player1.img, player1.position)
+    player1.showLife(screen)
     
     pygame.display.update()
 
