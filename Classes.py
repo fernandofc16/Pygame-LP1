@@ -63,6 +63,7 @@ class Player():
         self.heartText = pygame.font.SysFont('arial', 30).render("Life: ", True, (0, 0, 0))
         self.heartImage = pygame.image.load('sprites_player/heart.png')
         self.ammo = 10
+        self.ammoText = pygame.font.SysFont('arial', 21).render("Ammo: " + str(self.ammo), True, (0, 0, 0))
         self.score = 0
         self.scoreText = pygame.font.SysFont('arial', 30).render("Score: " + str(self.score), True, (0, 0, 0))
   
@@ -120,6 +121,10 @@ class Player():
                 shots.append(Shot((self.position[0]+40, self.position[1]+40), 'x',  1))
             else:
                 shots.append(Shot((self.position[0], self.position[1]+20), 'x', -1))
+            self.ammoText = pygame.font.SysFont('arial', 21).render("Ammo: " + str(self.ammo), True, (0, 0, 0))
+
+    def showAmmoAmount(self, screen):
+        screen.blit(self.ammoText, (7, 50))
 
     def addScore(self, amount):
         self.score += amount
@@ -139,7 +144,7 @@ class Shot():
             self.img = pygame.image.load('sprites_player/shotY.png')
         
         self.rect = pygame.Rect(position[0], position[1], self.img.get_width(), self.img.get_height())
-        self.vel = vel * 25
+        self.vel = vel * 30
 
     def move(self):
         if self.eixo == 'x':
@@ -245,6 +250,7 @@ while inGame:
     screen.blit(player1.img, player1.position)
     player1.showLife(screen)
     player1.showScore(screen)
+    player1.showAmmoAmount(screen)
     
     pygame.display.update()
 
