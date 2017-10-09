@@ -62,6 +62,7 @@ class Player():
         self.life = 3
         self.heartText = pygame.font.SysFont('arial', 30).render("Life: ", True, (0, 0, 0))
         self.heartImage = pygame.image.load('sprites_player/heart.png')
+        self.shots = []
         self.ammo = 10
         self.ammoText = pygame.font.SysFont('arial', 21).render("Ammo: " + str(self.ammo), True, (0, 0, 0))
         self.score = 0
@@ -114,13 +115,13 @@ class Player():
         if self.ammo > 0:
             self.ammo -= 1
             if player1.grau == 0:
-                shots.append(Shot((self.position[0]+40, self.position[1]), 'y', -1))
+                self.shots.append(Shot((self.position[0]+40, self.position[1]), 'y', -1))
             elif player1.grau == 180:
-                shots.append(Shot((self.position[0]+20, self.position[1]+40), 'y',  1)) 
+                self.shots.append(Shot((self.position[0]+20, self.position[1]+40), 'y',  1)) 
             elif player1.grau == 90:
-                shots.append(Shot((self.position[0]+40, self.position[1]+40), 'x',  1))
+                self.shots.append(Shot((self.position[0]+40, self.position[1]+40), 'x',  1))
             else:
-                shots.append(Shot((self.position[0], self.position[1]+20), 'x', -1))
+                self.shots.append(Shot((self.position[0], self.position[1]+20), 'x', -1))
             self.ammoText = pygame.font.SysFont('arial', 21).render("Ammo: " + str(self.ammo), True, (0, 0, 0))
 
     def showAmmoAmount(self, screen):
@@ -183,11 +184,9 @@ game_map.spawnMonstersPoring(2, poring_right_image, poring_left_image)
 img_player = pygame.image.load('sprites_player/sprite1_player_0.png')
 player1 = Player((500-70/2, 350-70/2), img_player)
 
-
 inGame = True
 win = False
 
-shots = []
 image = pygame.image.load('sprites_player/sprite' + str(player1.passo) + '_player_' + str(player1.grau) + '.png')
 
 while inGame:
@@ -228,13 +227,13 @@ while inGame:
     image = pygame.image.load('sprites_player/sprite' + str(player1.passo) + '_player_' + str(player1.grau) + '.png')      
     player1.setImage(image)
 
-    for shot in shots:
+    for shot in player1.shots:
         shot.move()
         screen.blit(shot.img, shot.position)
         if shot.position[0] > SCREEN_WIDTH or shot.position[0] < 0:
-            shots.remove(shot)
+            player1.shots.remove(shot)
         elif shot.position[1] > SCREEN_HEIGHT or shot.position[1] < 0:
-            shots.remove(shot)
+            player1.shots.remove(shot)
     
     for monster in game_map.monsters:
         monster.move(player1)
@@ -245,11 +244,11 @@ while inGame:
             game_map.monsters.remove(monster)
             if(player1.isPlayerDead()):
                 inGame = False
-        for shot in shots:
+        for shot in player1.shots:
             if shot.is_collided_with(monster):
                 print("MATOU")
                 game_map.monsters.remove(monster)
-                shots.remove(shot)
+                player1.shots.remove(shot)
                 player1.addScore(100)
 
     if len(game_map.monsters) == 0 and inGame:
