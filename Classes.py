@@ -16,7 +16,7 @@ class Monster():
         self.rect = pygame.Rect(position[0], position[1], img_right[0].get_width(), self.img_height)
         self.vel = rd.randint(1, 3)
         self.direction = 1
-        self.index = rd.randint(1, 4)
+        self.index = rd.randint(1, self.vel)
         self.changeValue = 1
 
     def move(self, player):
@@ -38,13 +38,13 @@ class Monster():
     def drawMonster(self, screen):
         self.index += self.changeValue
         if self.direction:
-            if self.index >= 5 or self.index <= 0:
+            if self.index >= 7-self.vel or self.index <= 0:
                 screen.blit(self.img_right[1], monster.position)
                 self.changeValue *= -1
             else:
                 screen.blit(self.img_right[0], monster.position)
         else:
-            if self.index >= 5 or self.index <= 0:
+            if self.index >= 7-self.vel or self.index <= 0:
                 screen.blit(self.img_left[1], monster.position)
                 self.changeValue *= -1
             else:
@@ -228,7 +228,7 @@ while inGame:
                 monsters.remove(monster)
                 shots.remove(shot)
 
-    if len(monsters) == 0:
+    if len(monsters) == 0 and inGame:
         win = True
         inGame = False
                     
