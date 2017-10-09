@@ -63,6 +63,8 @@ class Player():
         self.heartText = pygame.font.SysFont('arial', 30).render("Life: ", True, (0, 0, 0))
         self.heartImage = pygame.image.load('sprites_player/heart.png')
         self.ammo = 10
+        self.score = 0
+        self.scoreText = pygame.font.SysFont('arial', 30).render("Score: " + str(self.score), True, (0, 0, 0))
   
     def setPosition(self, position):
         self.position = position
@@ -119,6 +121,13 @@ class Player():
             else:
                 shots.append(Shot((player1.position[0], player1.position[1]+20), 'x', -1))
 
+    def addScore(self, amount):
+        self.score += amount
+        self.scoreText = pygame.font.SysFont('arial', 30).render("Score: " + str(self.score), True, (0, 0, 0))
+
+    def showScore(self, screen):
+        screen.blit(self.scoreText, (850 , 7))
+        
 class Shot():
 
     def __init__(self, position, eixo, vel):
@@ -227,6 +236,7 @@ while inGame:
                 print("MATOU")
                 monsters.remove(monster)
                 shots.remove(shot)
+                player1.addScore(100)
 
     if len(monsters) == 0 and inGame:
         win = True
@@ -234,6 +244,7 @@ while inGame:
                     
     screen.blit(player1.img, player1.position)
     player1.showLife(screen)
+    player1.showScore(screen)
     
     pygame.display.update()
 
