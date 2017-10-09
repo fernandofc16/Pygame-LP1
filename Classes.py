@@ -11,31 +11,44 @@ class Monster():
         self.position = position
         self.img_left = img_left
         self.img_right = img_right
-        self.rect = pygame.Rect(position[0], position[1], img_right.get_width(), img_right.get_height())
+        self.img_width = img_right[0].get_width()
+        self.img_height = img_right[0].get_height()
+        self.rect = pygame.Rect(position[0], position[1], img_right[0].get_width(), self.img_height)
         self.vel = rd.randint(1, 3)
         self.direction = 1
+        self.index = rd.randint(1, 4)
+        self.changeValue = 1
 
     def move(self, player):
-        if player.position[0]+player.img.get_width()/2 > self.position[0]+self.img_right.get_width()/2:
+        if player.position[0]+player.img.get_width()/2 > self.position[0]+self.img_width/2:
             self.position = (self.position[0]+self.vel, self.position[1])
             self.rect.x += self.vel
             self.direction = 0
-        if player.position[0]+player.img.get_width()/2 < self.position[0]+self.img_right.get_width()/2:
+        if player.position[0]+player.img.get_width()/2 < self.position[0]+self.img_width/2:
             self.position = (self.position[0]-self.vel, self.position[1])
             self.rect.x -= self.vel
             self.direction = 1
-        if player.position[1]+player.img.get_height()/2 > self.position[1]+self.img_right.get_height()/2:
+        if player.position[1]+player.img.get_height()/2 > self.position[1]+self.img_height/2:
             self.position = (self.position[0], self.position[1]+self.vel)
             self.rect.y += self.vel
-        if player.position[1]+player.img.get_height()/2 < self.position[1]+self.img_right.get_height()/2:
+        if player.position[1]+player.img.get_height()/2 < self.position[1]+self.img_height/2:
             self.position = (self.position[0], self.position[1]-self.vel)
             self.rect.y -= self.vel
 
     def drawMonster(self, screen):
+        self.index += self.changeValue
         if self.direction:
-            screen.blit(self.img_right, monster.position)
+            if self.index >= 5 or self.index <= 0:
+                screen.blit(self.img_right[1], monster.position)
+                self.changeValue *= -1
+            else:
+                screen.blit(self.img_right[0], monster.position)
         else:
-            screen.blit(self.img_left, monster.position)
+            if self.index >= 5 or self.index <= 0:
+                screen.blit(self.img_left[1], monster.position)
+                self.changeValue *= -1
+            else:
+                screen.blit(self.img_left[0], monster.position)
         
 class Player():
 
@@ -49,6 +62,7 @@ class Player():
         self.life = 3
         self.heartText = pygame.font.SysFont('arial', 30).render("Life: ", True, (0, 0, 0))
         self.heartImage = pygame.image.load('sprites_player/heart.png')
+        self.ammo = 10
   
     def setPosition(self, position):
         self.position = position
@@ -92,7 +106,18 @@ class Player():
         screen.blit(self.heartText, (7, 7))
         for i in range(1, self.life+1):
             screen.blit(self.heartImage, (20 + 40*i, 10))
-            
+
+    def shoot(self):
+        if self.ammo > 0:
+            self.ammo -= 1
+            if player1.grau == 0:
+                shots.append(Shot((player1.position[0]+40, player1.position[1]), 'y', -1))
+            elif player1.grau == 180:
+                shots.append(Shot((player1.position[0]+20, player1.position[1]), 'y',  1)) 
+            elif player1.grau == 90:
+                shots.append(Shot((player1.position[0], player1.position[1]+40), 'x',  1))
+            else:
+                shots.append(Shot((player1.position[0], player1.position[1]+20), 'x', -1))
 
 class Shot():
 
@@ -127,8 +152,8 @@ player1 = Player((500-70/2, 350-70/2), img_player)
 
 monsters = []
 
-poring_right_image = pygame.image.load('sprites_monsters/poring_right.png')
-poring_left_image = pygame.image.load('sprites_monsters/poring_left.png')
+poring_right_image = [pygame.image.load('sprites_monsters/poring_right.png'), pygame.image.load('sprites_monsters/poring_right2.png')]
+poring_left_image = [pygame.image.load('sprites_monsters/poring_left.png'), pygame.image.load('sprites_monsters/poring_left2.png')]
 
 for i in range(2):
     monsters.append(Monster((rd.randint(-50, -30), rd.randint(30, 670)), poring_right_image, poring_left_image))
@@ -167,14 +192,7 @@ while inGame:
     for event in pygame.event.get():
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
-                if player1.grau == 0:
-                    shots.append(Shot((player1.position[0]+40, player1.position[1]), 'y', -1))
-                elif player1.grau == 180:
-                    shots.append(Shot((player1.position[0]+20, player1.position[1]), 'y',  1)) 
-                elif player1.grau == 90:
-                    shots.append(Shot((player1.position[0], player1.position[1]+40), 'x',  1))
-                else:
-                    shots.append(Shot((player1.position[0], player1.position[1]+20), 'x', -1))
+                player1.shoot()
 
     if player1.grau >= 360:
         player1.grau = 0
