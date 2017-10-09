@@ -157,23 +157,32 @@ class Shot():
     def is_collided_with(self, sprite):
         return self.rect.colliderect(sprite.rect)
 
+class Map():
+
+    def __init__(self):
+        self.monsters = []
+
+    def spawnMonstersPoring(self, amount, right_image, left_image):
+        for i in range(amount):
+            self.monsters.append(Monster((rd.randint(-100, -30), rd.randint(30, 670)), right_image, left_image))
+            self.monsters.append(Monster((rd.randint(30, 970), rd.randint(-100, -30)), right_image, left_image))
+            self.monsters.append(Monster((rd.randint(1030, 1100), rd.randint(30, 670)), right_image, left_image))
+            self.monsters.append(Monster((rd.randint(30, 970), rd.randint(730, 800)), right_image, left_image))
+
 pygame.init()
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 screen.fill((255, 255, 255))
 
-img_player = pygame.image.load('sprites_player/sprite1_player_0.png')
-player1 = Player((500-70/2, 350-70/2), img_player)
-
-monsters = []
+game_map = Map()
 
 poring_right_image = [pygame.image.load('sprites_monsters/poring_right.png'), pygame.image.load('sprites_monsters/poring_right2.png')]
 poring_left_image = [pygame.image.load('sprites_monsters/poring_left.png'), pygame.image.load('sprites_monsters/poring_left2.png')]
 
-for i in range(2):
-    monsters.append(Monster((rd.randint(-50, -30), rd.randint(30, 670)), poring_right_image, poring_left_image))
-    monsters.append(Monster((rd.randint(30, 970), rd.randint(-50, -30)), poring_right_image, poring_left_image))
-    monsters.append(Monster((rd.randint(1030, 1050), rd.randint(30, 670)), poring_right_image, poring_left_image))
-    monsters.append(Monster((rd.randint(30, 970), rd.randint(730, 750)), poring_right_image, poring_left_image))
+game_map.spawnMonstersPoring(2, poring_right_image, poring_left_image)
+
+img_player = pygame.image.load('sprites_player/sprite1_player_0.png')
+player1 = Player((500-70/2, 350-70/2), img_player)
+
 
 inGame = True
 win = False
@@ -227,23 +236,23 @@ while inGame:
         elif shot.position[1] > SCREEN_HEIGHT or shot.position[1] < 0:
             shots.remove(shot)
     
-    for monster in monsters:
+    for monster in game_map.monsters:
         monster.move(player1)
         monster.drawMonster(screen)
         if player1.is_collided_with(monster):
             print("COLIDIU")
             player1.damagePlayer(1)
-            monsters.remove(monster)
+            game_map.monsters.remove(monster)
             if(player1.isPlayerDead()):
                 inGame = False
         for shot in shots:
             if shot.is_collided_with(monster):
                 print("MATOU")
-                monsters.remove(monster)
+                game_map.monsters.remove(monster)
                 shots.remove(shot)
                 player1.addScore(100)
 
-    if len(monsters) == 0 and inGame:
+    if len(game_map.monsters) == 0 and inGame:
         win = True
         inGame = False
                     
