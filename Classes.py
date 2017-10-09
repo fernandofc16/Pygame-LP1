@@ -113,13 +113,13 @@ class Player():
         if self.ammo > 0:
             self.ammo -= 1
             if player1.grau == 0:
-                shots.append(Shot((player1.position[0]+40, player1.position[1]), 'y', -1))
+                shots.append(Shot((self.position[0]+40, self.position[1]), 'y', -1))
             elif player1.grau == 180:
-                shots.append(Shot((player1.position[0]+20, player1.position[1]), 'y',  1)) 
+                shots.append(Shot((self.position[0]+20, self.position[1]+40), 'y',  1)) 
             elif player1.grau == 90:
-                shots.append(Shot((player1.position[0], player1.position[1]+40), 'x',  1))
+                shots.append(Shot((self.position[0]+40, self.position[1]+40), 'x',  1))
             else:
-                shots.append(Shot((player1.position[0], player1.position[1]+20), 'x', -1))
+                shots.append(Shot((self.position[0], self.position[1]+20), 'x', -1))
 
     def addScore(self, amount):
         self.score += amount
