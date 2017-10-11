@@ -1,6 +1,8 @@
 import pygame
 import math
 import random as rd
+from threading import Thread
+from time import sleep
 
 SCREEN_HEIGHT = 700
 SCREEN_WIDTH = 1000
@@ -13,7 +15,7 @@ class Monster():
         self.img_right = img_right
         self.img_width = img_right[0].get_width()
         self.img_height = img_right[0].get_height()
-        self.rect = pygame.Rect(position[0], position[1], img_right[0].get_width(), self.img_height)
+        self.rect = pygame.Rect(position[0]+5, position[1]+5, self.img_width-10, self.img_height-10)
         self.vel = rd.randint(1, 3)
         self.direction = 1
         self.index = rd.randint(1, self.vel)
@@ -37,6 +39,7 @@ class Monster():
 
     def drawMonster(self, screen):
         self.index += self.changeValue
+        #pygame.draw.rect(screen, (0, 0, 0), self.rect) #debug
         if self.direction:
             if self.index >= 7-self.vel or self.index <= 0:
                 screen.blit(self.img_right[1], monster.position)
@@ -55,11 +58,11 @@ class Player():
     def __init__(self, position, img):
         self.position = position
         self.img = img
-        self.rect = pygame.Rect(position[0], position[1], img.get_width(), img.get_height())
+        self.rect = pygame.Rect(position[0]+8, position[1]+5, img.get_width()-16, img.get_height()-10)
         self.grau = 0
         self.passo = 1
         self.vel = 7
-        self.life = 3
+        self.life = 5
         self.heartText = pygame.font.SysFont('arial', 30).render("Life: ", True, (0, 0, 0))
         self.heartImage = pygame.image.load('sprites_player/heart.png')
         self.shots = []
@@ -127,6 +130,10 @@ class Player():
     def showAmmoAmount(self, screen):
         screen.blit(self.ammoText, (7, 50))
 
+    def addAmmo(self, amount):
+        self.ammo += amount
+        self.ammoText = pygame.font.SysFont('arial', 21).render("Ammo: " + str(self.ammo), True, (0, 0, 0))
+
     def addScore(self, amount):
         self.score += amount
         self.scoreText = pygame.font.SysFont('arial', 30).render("Score: " + str(self.score), True, (0, 0, 0))
@@ -162,13 +169,27 @@ class Map():
 
     def __init__(self):
         self.monsters = []
+        self.level = 1
+        self.showGuiLevel = True
+        self.last = pygame.time.get_ticks()
 
     def spawnMonstersPoring(self, amount, right_image, left_image):
         for i in range(amount):
-            self.monsters.append(Monster((rd.randint(-100, -30), rd.randint(30, 670)), right_image, left_image))
-            self.monsters.append(Monster((rd.randint(30, 970), rd.randint(-100, -30)), right_image, left_image))
-            self.monsters.append(Monster((rd.randint(1030, 1100), rd.randint(30, 670)), right_image, left_image))
-            self.monsters.append(Monster((rd.randint(30, 970), rd.randint(730, 800)), right_image, left_image))
+            #monsters spawn at left side
+            self.monsters.append(Monster((rd.randint(-(70+(30*amount)), -30), rd.randint(0, 700)), right_image, left_image))
+            #monsters spawn at top side
+            self.monsters.append(Monster((rd.randint(0, 1000), rd.randint(-(70+(30*amount)), -30)), right_image, left_image))
+            #monsters spawn at right side
+            self.monsters.append(Monster((rd.randint(1030, 1000+(30*amount)), rd.randint(0, 700)), right_image, left_image))
+            #monsters spawn at bot side
+            self.monsters.append(Monster((rd.randint(0, 1000), rd.randint(730, 700+(30*amount))), right_image, left_image))
+
+    def showLevelGUI(self):
+        return pygame.font.SysFont('arial', 200).render("LEVEL " + str(self.level), True, (0, 0, 0))
+
+    def delay(self, delay, function):
+        pass
+            
 
 pygame.init()
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -179,7 +200,7 @@ game_map = Map()
 poring_right_image = [pygame.image.load('sprites_monsters/poring_right.png'), pygame.image.load('sprites_monsters/poring_right2.png')]
 poring_left_image = [pygame.image.load('sprites_monsters/poring_left.png'), pygame.image.load('sprites_monsters/poring_left2.png')]
 
-game_map.spawnMonstersPoring(2, poring_right_image, poring_left_image)
+game_map.spawnMonstersPoring(1, poring_right_image, poring_left_image)
 
 img_player = pygame.image.load('sprites_player/sprite1_player_0.png')
 player1 = Player((500-70/2, 350-70/2), img_player)
@@ -239,27 +260,33 @@ while inGame:
         monster.move(player1)
         monster.drawMonster(screen)
         if player1.is_collided_with(monster):
-            print("COLIDIU")
             player1.damagePlayer(1)
             game_map.monsters.remove(monster)
             if(player1.isPlayerDead()):
                 inGame = False
-        for shot in player1.shots:
-            if shot.is_collided_with(monster):
-                print("MATOU")
-                game_map.monsters.remove(monster)
-                player1.shots.remove(shot)
-                player1.addScore(100)
+        else:
+            for shot in player1.shots:
+                if shot.is_collided_with(monster):
+                    game_map.monsters.remove(monster)
+                    player1.shots.remove(shot)
+                    player1.addScore(100)
 
-    if len(game_map.monsters) == 0 and inGame:
-        win = True
-        inGame = False
-                    
+    if len(game_map.monsters) == 0 and inGame and not game_map.showGuiLevel:
+        game_map.level += 1
+        game_map.spawnMonstersPoring(game_map.level, poring_right_image, poring_left_image)
+        player1.addAmmo(game_map.level*4+4)
+        game_map.showGuiLevel = True
+
+    #pygame.draw.rect(screen, (0, 0, 0), player1.rect) #debug
     screen.blit(player1.img, player1.position)
     player1.showLife(screen)
     player1.showScore(screen)
     player1.showAmmoAmount(screen)
-    
+
+    if game_map.showGuiLevel:
+        screen.blit(game_map.showLevelGUI(), (SCREEN_WIDTH/2-300, SCREEN_HEIGHT/2-150))
+        game_map.showGuiLevel = False
+
     pygame.display.update()
 
 if win:
