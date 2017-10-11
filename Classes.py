@@ -1,8 +1,7 @@
 import pygame
 import math
 import random as rd
-from threading import Thread
-from time import sleep
+import time
 
 SCREEN_HEIGHT = 700
 SCREEN_WIDTH = 1000
@@ -171,25 +170,28 @@ class Map():
         self.monsters = []
         self.level = 1
         self.showGuiLevel = True
-        self.last = pygame.time.get_ticks()
+        self.start_time = time.time()
 
-    def spawnMonstersPoring(self, amount, right_image, left_image):
+    def spawnMonsters(self, amount, right_image, left_image):
         for i in range(amount):
             #monsters spawn at left side
-            self.monsters.append(Monster((rd.randint(-(70+(30*amount)), -30), rd.randint(0, 700)), right_image, left_image))
+            self.monsters.append(Monster((rd.randint(-(70+(30*amount)), -70), rd.randint(0, 700)), right_image, left_image))
             #monsters spawn at top side
-            self.monsters.append(Monster((rd.randint(0, 1000), rd.randint(-(70+(30*amount)), -30)), right_image, left_image))
+            self.monsters.append(Monster((rd.randint(0, 1000), rd.randint(-(70+(30*amount)), -70)), right_image, left_image))
             #monsters spawn at right side
-            self.monsters.append(Monster((rd.randint(1030, 1000+(30*amount)), rd.randint(0, 700)), right_image, left_image))
+            self.monsters.append(Monster((rd.randint(1070, 1070+(30*amount)), rd.randint(0, 700)), right_image, left_image))
             #monsters spawn at bot side
-            self.monsters.append(Monster((rd.randint(0, 1000), rd.randint(730, 700+(30*amount))), right_image, left_image))
+            self.monsters.append(Monster((rd.randint(0, 1000), rd.randint(770, 770+(30*amount))), right_image, left_image))
 
     def showLevelGUI(self):
-        return pygame.font.SysFont('arial', 200).render("LEVEL " + str(self.level), True, (0, 0, 0))
+        screen.blit(pygame.font.SysFont('arial', 200).render("LEVEL " + str(self.level), True, (0, 0, 0)), (SCREEN_WIDTH/2-300, SCREEN_HEIGHT/2-150))
 
-    def delay(self, delay, function):
-        pass
-            
+    def changeLevel(self):
+        self.level += 1
+        player1.addAmmo(self.level*4+4)
+        self.spawnMonsters(game_map.level, poring_right_image, poring_left_image)
+        self.showGuiLevel = True
+        self.start_time = time.time()
 
 pygame.init()
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -200,7 +202,7 @@ game_map = Map()
 poring_right_image = [pygame.image.load('sprites_monsters/poring_right.png'), pygame.image.load('sprites_monsters/poring_right2.png')]
 poring_left_image = [pygame.image.load('sprites_monsters/poring_left.png'), pygame.image.load('sprites_monsters/poring_left2.png')]
 
-game_map.spawnMonstersPoring(1, poring_right_image, poring_left_image)
+game_map.spawnMonsters(1, poring_right_image, poring_left_image)
 
 img_player = pygame.image.load('sprites_player/sprite1_player_0.png')
 player1 = Player((500-70/2, 350-70/2), img_player)
@@ -271,11 +273,8 @@ while inGame:
                     player1.shots.remove(shot)
                     player1.addScore(100)
 
-    if len(game_map.monsters) == 0 and inGame and not game_map.showGuiLevel:
-        game_map.level += 1
-        game_map.spawnMonstersPoring(game_map.level, poring_right_image, poring_left_image)
-        player1.addAmmo(game_map.level*4+4)
-        game_map.showGuiLevel = True
+    if len(game_map.monsters) == 0 and inGame:
+        game_map.changeLevel()
 
     #pygame.draw.rect(screen, (0, 0, 0), player1.rect) #debug
     screen.blit(player1.img, player1.position)
@@ -284,8 +283,9 @@ while inGame:
     player1.showAmmoAmount(screen)
 
     if game_map.showGuiLevel:
-        screen.blit(game_map.showLevelGUI(), (SCREEN_WIDTH/2-300, SCREEN_HEIGHT/2-150))
-        game_map.showGuiLevel = False
+        if time.time() - game_map.start_time > 1:
+            game_map.showGuiLevel = False
+        game_map.showLevelGUI()
 
     pygame.display.update()
 
@@ -293,4 +293,5 @@ if win:
     screen.blit(pygame.image.load('you_win.jpg'), (0, 0))
 else: 
     screen.blit(pygame.image.load('game_over.png'), (0, 0))
+    
 pygame.display.update()
