@@ -17,8 +17,10 @@ class Monster():
         self.rect = pygame.Rect(position[0]+5, position[1]+5, self.img_width-10, self.img_height-10)
         self.vel = rd.randint(1, 3)
         self.direction = 1
-        self.index = rd.randint(1, self.vel)
+        self.index = rd.randint(0, len(img_right)-1)
+        self.animationFrames = len(img_right)
         self.changeValue = 1
+        print("IMAGE RIGHT: ", len(img_right))
 
     def move(self, player):
         if player.position[0]+player.img.get_width()/2 > self.position[0]+self.img_width/2:
@@ -37,20 +39,14 @@ class Monster():
             self.rect.y -= self.vel
 
     def drawMonster(self, screen):
-        self.index += self.changeValue
         #pygame.draw.rect(screen, (0, 0, 0), self.rect) #debug
         if self.direction:
-            if self.index >= 7-self.vel or self.index <= 0:
-                screen.blit(self.img_right[1], monster.position)
-                self.changeValue *= -1
-            else:
-                screen.blit(self.img_right[0], monster.position)
+            screen.blit(self.img_right[self.index], monster.position)
         else:
-            if self.index >= 7-self.vel or self.index <= 0:
-                screen.blit(self.img_left[1], monster.position)
-                self.changeValue *= -1
-            else:
-                screen.blit(self.img_left[0], monster.position)
+            screen.blit(self.img_left[self.index], monster.position)
+        self.index += 1
+        if self.index == self.animationFrames:
+            self.index = 0
         
 class Player():
 
@@ -168,6 +164,7 @@ class Map():
 
     def __init__(self):
         self.monsters = []
+        self.allies = []
         self.level = 1
         self.showGuiLevel = True
         self.start_time = time.time()
@@ -182,6 +179,9 @@ class Map():
             self.monsters.append(Monster((rd.randint(1070, 1070+(30*amount)), rd.randint(0, 700)), right_image, left_image))
             #monsters spawn at bot side
             self.monsters.append(Monster((rd.randint(0, 1000), rd.randint(770, 770+(30*amount))), right_image, left_image))
+
+    def spawnAllies(self, amount, right_image, left_image):
+        pass
 
     def showLevelGUI(self):
         screen.blit(pygame.font.SysFont('arial', 200).render("LEVEL " + str(self.level), True, (0, 0, 0)), (SCREEN_WIDTH/2-300, SCREEN_HEIGHT/2-150))
@@ -199,9 +199,13 @@ screen.fill((255, 255, 255))
 
 game_map = Map()
 
-poring_right_image = [pygame.image.load('sprites_monsters/poring_right.png'), pygame.image.load('sprites_monsters/poring_right2.png')]
-poring_left_image = [pygame.image.load('sprites_monsters/poring_left.png'), pygame.image.load('sprites_monsters/poring_left2.png')]
+poring_right_image = [pygame.image.load('sprites_monsters/poring/right/frame_' + str(i) + '_delay-0.1s.png') for i in range(10)]
+poring_left_image = [pygame.image.load('sprites_monsters/poring/left/frame_' + str(i) + '_delay-0.1s.png') for i in range(10)]
 
+angeling_right_images = [pygame.image.load('sprites_allies/angeling/right/frame_' + str(i) + '_delay-0.15s.png') for i in range(27)]
+angeling_left_images = [pygame.image.load('sprites_allies/angeling/left/frame_' + str(i) + '_delay-0.15s.png') for i in range(27)]
+
+game_map.spawnMonsters(1, angeling_right_images, angeling_left_images)
 game_map.spawnMonsters(1, poring_right_image, poring_left_image)
 
 img_player = pygame.image.load('sprites_player/sprite1_player_0.png')
