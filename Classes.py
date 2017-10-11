@@ -15,12 +15,10 @@ class Monster():
         self.img_width = img_right[0].get_width()
         self.img_height = img_right[0].get_height()
         self.rect = pygame.Rect(position[0]+5, position[1]+5, self.img_width-10, self.img_height-10)
-        self.vel = rd.randint(1, 3)
+        self.vel = rd.randint(1, 4)
         self.direction = 1
         self.index = rd.randint(0, len(img_right)-1)
         self.animationFrames = len(img_right)
-        self.changeValue = 1
-        print("IMAGE RIGHT: ", len(img_right))
 
     def move(self, player):
         if player.position[0]+player.img.get_width()/2 > self.position[0]+self.img_width/2:
@@ -41,9 +39,9 @@ class Monster():
     def drawMonster(self, screen):
         #pygame.draw.rect(screen, (0, 0, 0), self.rect) #debug
         if self.direction:
-            screen.blit(self.img_right[self.index], monster.position)
+            screen.blit(self.img_right[self.index], self.position)
         else:
-            screen.blit(self.img_left[self.index], monster.position)
+            screen.blit(self.img_left[self.index], self.position)
         self.index += 1
         if self.index == self.animationFrames:
             self.index = 0
@@ -100,6 +98,12 @@ class Player():
 
     def damagePlayer(self, amount):
         self.life -= amount
+
+    def healPlayer(self, amount):
+        if self.life < 5:
+            self.life += amount
+        else:
+            self.score += 1000
 
     def isPlayerDead(self):
         return self.life <= 0
@@ -181,7 +185,20 @@ class Map():
             self.monsters.append(Monster((rd.randint(0, 1000), rd.randint(770, 770+(30*amount))), right_image, left_image))
 
     def spawnAllies(self, amount, right_image, left_image):
-        pass
+        for i in range(amount):
+            side = rd.randint(1, 4)
+            if side == 1:
+                #allies spawn at left side
+                self.allies.append(Monster((rd.randint(-(70+(30*amount)), -70), rd.randint(0, 700)), right_image, left_image))
+            elif side == 2:
+                #allies spawn at top side
+                self.allies.append(Monster((rd.randint(0, 1000), rd.randint(-(70+(30*amount)), -70)), right_image, left_image))
+            elif side == 3:
+                #allies spawn at right side
+                self.allies.append(Monster((rd.randint(1070, 1070+(30*amount)), rd.randint(0, 700)), right_image, left_image))
+            elif side == 4:
+                #allies spawn at bot side
+                self.allies.append(Monster((rd.randint(0, 1000), rd.randint(770, 770+(30*amount))), right_image, left_image))
 
     def showLevelGUI(self):
         screen.blit(pygame.font.SysFont('arial', 200).render("LEVEL " + str(self.level), True, (0, 0, 0)), (SCREEN_WIDTH/2-300, SCREEN_HEIGHT/2-150))
@@ -190,6 +207,8 @@ class Map():
         self.level += 1
         player1.addAmmo(self.level*4+4)
         self.spawnMonsters(game_map.level, poring_right_image, poring_left_image)
+        if rd.random() > 0.65:
+            self.spawnAllies(1, angeling_right_images, angeling_left_images)
         self.showGuiLevel = True
         self.start_time = time.time()
 
@@ -205,7 +224,7 @@ poring_left_image = [pygame.image.load('sprites_monsters/poring/left/frame_' + s
 angeling_right_images = [pygame.image.load('sprites_allies/angeling/right/frame_' + str(i) + '_delay-0.15s.png') for i in range(27)]
 angeling_left_images = [pygame.image.load('sprites_allies/angeling/left/frame_' + str(i) + '_delay-0.15s.png') for i in range(27)]
 
-game_map.spawnMonsters(1, angeling_right_images, angeling_left_images)
+game_map.spawnAllies(1, angeling_right_images, angeling_left_images)
 game_map.spawnMonsters(1, poring_right_image, poring_left_image)
 
 img_player = pygame.image.load('sprites_player/sprite1_player_0.png')
@@ -277,7 +296,20 @@ while inGame:
                     player1.shots.remove(shot)
                     player1.addScore(100)
 
-    if len(game_map.monsters) == 0 and inGame:
+    for allie in game_map.allies:
+        allie.move(player1)
+        allie.drawMonster(screen)
+        if player1.is_collided_with(allie):
+            player1.healPlayer(1)
+            game_map.allies.remove(allie)
+        else:
+            for shot in player1.shots:
+                if shot.is_collided_with(allie):
+                    game_map.allies.remove(allie)
+                    player1.shots.remove(shot)
+                    player1.addScore(-500)
+
+    if len(game_map.monsters) == 0 and len(game_map.allies) == 0 and inGame:
         game_map.changeLevel()
 
     #pygame.draw.rect(screen, (0, 0, 0), player1.rect) #debug
