@@ -6,19 +6,70 @@ import time
 SCREEN_HEIGHT = 700
 SCREEN_WIDTH = 1000
 
+class Images():
+
+    def __init__(self):
+        self.poring = [[pygame.image.load('sprites_monsters/poring/right/frame_' + str(i) + '_delay-0.1s.png') for i in range(10)],
+                        [pygame.image.load('sprites_monsters/poring/left/frame_' + str(i) + '_delay-0.1s.png') for i in range(10)]]
+
+        self.angeling = [[pygame.image.load('sprites_allies/angeling/right/frame_' + str(i) + '_delay-0.15s.png') for i in range(27)],
+                         [pygame.image.load('sprites_allies/angeling/left/frame_' + str(i) + '_delay-0.15s.png') for i in range(27)]]
+
+        self.aquaring = [[pygame.transform.scale(pygame.image.load('sprites_monsters/aquaring/right/frame_' + str(i) + '_delay-0.1s.png'), (60, 60)) for i in range(9)],
+                         [pygame.transform.scale(pygame.image.load('sprites_monsters/aquaring/left/frame_' + str(i) + '_delay-0.1s.png'), (60, 60)) for i in range(9)]]
+        
+        self.poporing = [[pygame.transform.scale(pygame.image.load('sprites_monsters/poporing/right/frame_' + str(i) + '_delay-0.1s.png'), (50, 50)) for i in range(4)],
+                         [pygame.transform.scale(pygame.image.load('sprites_monsters/poporing/left/frame_' + str(i) + '_delay-0.1s.png'), (50, 50)) for i in range(4)]]
+
+        self.stapo = [[pygame.transform.scale(pygame.image.load('sprites_monsters/stapo/right/frame_' + str(i) + '_delay-0.1s.png'), (60, 60)) for i in range(13)],
+                      [pygame.transform.scale(pygame.image.load('sprites_monsters/stapo/left/frame_' + str(i) + '_delay-0.1s.png'), (60, 60)) for i in range(13)]]
+
+        self.metalling = [[pygame.transform.scale(pygame.image.load('sprites_monsters/metalling/right/frame_' + str(i) + '_delay-0.09s.png'), (50, 50)) for i in range(4)],
+                          [pygame.transform.scale(pygame.image.load('sprites_monsters/metalling/left/frame_' + str(i) + '_delay-0.09s.png'), (50, 50)) for i in range(4)]]
+
+        self.magmaring = [[pygame.transform.scale(pygame.image.load('sprites_monsters/magmaring/right/frame_' + str(i) + '_delay-0.1s.png'), (60, 60)) for i in range(5)],
+                          [pygame.transform.scale(pygame.image.load('sprites_monsters/magmaring/left/frame_' + str(i) + '_delay-0.1s.png'), (60, 60)) for i in range(5)]]
+
+        self.develing = [[pygame.transform.scale(pygame.image.load('sprites_monsters/develing/right/frame_' + str(i) + '_delay-0.1s.png'), (80, 80)) for i in range(7)],
+                         [pygame.transform.scale(pygame.image.load('sprites_monsters/develing/left/frame_' + str(i) + '_delay-0.1s.png'), (80, 80)) for i in range(7)]]
+
+    def getPoringImages(self):
+        return self.poring
+
+    def getAngelingImages(self):
+        return self.angeling
+
+    def getAquaringImages(self):
+        return self.aquaring
+
+    def getPoporingImages(self):
+        return self.poporing
+
+    def getStapoImages(self):
+        return self.stapo
+
+    def getMetallingImages(self):
+        return self.metalling
+
+    def getMagmaringImages(self):
+        return self.magmaring
+
+    def getDevelingImages(self):
+        return self.develing
+
 class Monster():
 
-    def __init__(self, position, img_left, img_right, life):
+    def __init__(self, position, img, life):
         self.position = position
-        self.img_left = img_left
-        self.img_right = img_right
-        self.img_width = img_right[0].get_width()
-        self.img_height = img_right[0].get_height()
+        self.img_left = img[0]
+        self.img_right = img[1]
+        self.img_width = self.img_right[0].get_width()
+        self.img_height = self.img_right[0].get_height()
         self.rect = pygame.Rect(position[0]+5, position[1]+5, self.img_width-10, self.img_height-10)
         self.vel = rd.randint(1, 4)
         self.direction = 1
-        self.index = rd.randint(0, len(img_right)-1)
-        self.animationFrames = len(img_right)
+        self.index = rd.randint(0, len(self.img_right)-1)
+        self.animationFrames = len(self.img_right)
         self.life = life
 
     def move(self, player):
@@ -182,32 +233,32 @@ class Map():
         self.showGuiLevel = True
         self.start_time = time.time()
 
-    def spawnMonsters(self, amount, right_image, left_image, life):
+    def spawnMonsters(self, amount, image, life):
         for i in range(amount):
             #monsters spawn at left side
-            self.monsters.append(Monster((rd.randint(-(70+(30*amount)), -70), rd.randint(0, 700)), right_image, left_image, life))
+            self.monsters.append(Monster((rd.randint(-(70+(30*amount)), -70), rd.randint(0, 700)), image, life))
             #monsters spawn at top side
-            self.monsters.append(Monster((rd.randint(0, 1000), rd.randint(-(70+(30*amount)), -70)), right_image, left_image, life))
+            self.monsters.append(Monster((rd.randint(0, 1000), rd.randint(-(70+(30*amount)), -70)), image, life))
             #monsters spawn at right side
-            self.monsters.append(Monster((rd.randint(1070, 1070+(30*amount)), rd.randint(0, 700)), right_image, left_image, life))
+            self.monsters.append(Monster((rd.randint(1070, 1070+(30*amount)), rd.randint(0, 700)), image, life))
             #monsters spawn at bot side
-            self.monsters.append(Monster((rd.randint(0, 1000), rd.randint(770, 770+(30*amount))), right_image, left_image, life))
+            self.monsters.append(Monster((rd.randint(0, 1000), rd.randint(770, 770+(30*amount))), image, life))
 
-    def spawnAllies(self, amount, right_image, left_image, life):
+    def spawnAllies(self, amount, image, life):
         for i in range(amount):
             side = rd.randint(1, 4)
             if side == 1:
                 #allies spawn at left side
-                self.allies.append(Monster((rd.randint(-(70+(30*amount)), -70), rd.randint(0, 700)), right_image, left_image, life))
+                self.allies.append(Monster((rd.randint(-(70+(30*amount)), -70), rd.randint(0, 700)), image, life))
             elif side == 2:
                 #allies spawn at top side
-                self.allies.append(Monster((rd.randint(0, 1000), rd.randint(-(70+(30*amount)), -70)), right_image, left_image, life))
+                self.allies.append(Monster((rd.randint(0, 1000), rd.randint(-(70+(30*amount)), -70)), image, life))
             elif side == 3:
                 #allies spawn at right side
-                self.allies.append(Monster((rd.randint(1070, 1070+(30*amount)), rd.randint(0, 700)), right_image, left_image, life))
+                self.allies.append(Monster((rd.randint(1070, 1070+(30*amount)), rd.randint(0, 700)), image, life))
             elif side == 4:
                 #allies spawn at bot side
-                self.allies.append(Monster((rd.randint(0, 1000), rd.randint(770, 770+(30*amount))), right_image, left_image, life))
+                self.allies.append(Monster((rd.randint(0, 1000), rd.randint(770, 770+(30*amount))), image, life))
 
     def showLevelGUI(self):
         screen.blit(pygame.font.SysFont('arial', 200).render("LEVEL " + str(self.level), True, (0, 0, 0)), (SCREEN_WIDTH/2-300, SCREEN_HEIGHT/2-150))
@@ -215,9 +266,9 @@ class Map():
     def changeLevel(self):
         self.level += 1
         player1.addAmmo(self.level*4+4)
-        self.spawnMonsters(game_map.level, poring_right_image, poring_left_image, 1)
+        self.spawnMonsters(game_map.level, images.getPoringImages(), 1)
         if rd.random() > 0.65:
-            self.spawnAllies(1, angeling_right_images, angeling_left_images, 1)
+            self.spawnAllies(1, images.getAngelingImages(), 1)
         self.showGuiLevel = True
         self.start_time = time.time()
 
@@ -226,15 +277,16 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 screen.fill((255, 255, 255))
 
 game_map = Map()
+images = Images()
 
-poring_right_image = [pygame.image.load('sprites_monsters/poring/right/frame_' + str(i) + '_delay-0.1s.png') for i in range(10)]
-poring_left_image = [pygame.image.load('sprites_monsters/poring/left/frame_' + str(i) + '_delay-0.1s.png') for i in range(10)]
+##poring_right_image = [pygame.image.load('sprites_monsters/poring/right/frame_' + str(i) + '_delay-0.1s.png') for i in range(10)]
+##poring_left_image = [pygame.image.load('sprites_monsters/poring/left/frame_' + str(i) + '_delay-0.1s.png') for i in range(10)]
+##
+##angeling_right_images = [pygame.image.load('sprites_allies/angeling/right/frame_' + str(i) + '_delay-0.15s.png') for i in range(27)]
+##angeling_left_images = [pygame.image.load('sprites_allies/angeling/left/frame_' + str(i) + '_delay-0.15s.png') for i in range(27)]
 
-angeling_right_images = [pygame.image.load('sprites_allies/angeling/right/frame_' + str(i) + '_delay-0.15s.png') for i in range(27)]
-angeling_left_images = [pygame.image.load('sprites_allies/angeling/left/frame_' + str(i) + '_delay-0.15s.png') for i in range(27)]
-
-game_map.spawnAllies(1, angeling_right_images, angeling_left_images, 1)
-game_map.spawnMonsters(1, poring_right_image, poring_left_image, 1)
+game_map.spawnAllies(1, images.getAngelingImages(), 1)
+game_map.spawnMonsters(1, images.getPoringImages(), 1)
 
 img_player = pygame.image.load('sprites_player/sprite1_player_0.png')
 player1 = Player((500-70/2, 350-70/2), img_player)
