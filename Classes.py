@@ -326,8 +326,8 @@ while inGame:
     pygame.display.update()
 
 if win:
-    screen.blit(pygame.image.load('you_win.jpg'), (0, 0))
+    screen.blit(pygame.image.load('background_images/you_win.jpg'), (0, 0))
 else: 
-    screen.blit(pygame.image.load('game_over.png'), (0, 0))
+    screen.blit(pygame.image.load('background_images/game_over.png'), (0, 0))
     
 pygame.display.update()
