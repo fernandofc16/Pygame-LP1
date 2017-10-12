@@ -8,7 +8,7 @@ SCREEN_WIDTH = 1000
 
 class Monster():
 
-    def __init__(self, position, img_left, img_right):
+    def __init__(self, position, img_left, img_right, life):
         self.position = position
         self.img_left = img_left
         self.img_right = img_right
@@ -19,6 +19,7 @@ class Monster():
         self.direction = 1
         self.index = rd.randint(0, len(img_right)-1)
         self.animationFrames = len(img_right)
+        self.life = life
 
     def move(self, player):
         if player.position[0]+player.img.get_width()/2 > self.position[0]+self.img_width/2:
@@ -45,6 +46,14 @@ class Monster():
         self.index += 1
         if self.index == self.animationFrames:
             self.index = 0
+
+    def damageMonster(self, amount):
+        self.life -= amount
+
+    def isDead(self):
+        if self.life <= 0:
+            return True
+        return False
         
 class Player():
 
@@ -103,7 +112,7 @@ class Player():
         if self.life < 5:
             self.life += amount
         else:
-            self.score += 1000
+            self.addScore(1000)
 
     def isPlayerDead(self):
         return self.life <= 0
@@ -173,32 +182,32 @@ class Map():
         self.showGuiLevel = True
         self.start_time = time.time()
 
-    def spawnMonsters(self, amount, right_image, left_image):
+    def spawnMonsters(self, amount, right_image, left_image, life):
         for i in range(amount):
             #monsters spawn at left side
-            self.monsters.append(Monster((rd.randint(-(70+(30*amount)), -70), rd.randint(0, 700)), right_image, left_image))
+            self.monsters.append(Monster((rd.randint(-(70+(30*amount)), -70), rd.randint(0, 700)), right_image, left_image, life))
             #monsters spawn at top side
-            self.monsters.append(Monster((rd.randint(0, 1000), rd.randint(-(70+(30*amount)), -70)), right_image, left_image))
+            self.monsters.append(Monster((rd.randint(0, 1000), rd.randint(-(70+(30*amount)), -70)), right_image, left_image, life))
             #monsters spawn at right side
-            self.monsters.append(Monster((rd.randint(1070, 1070+(30*amount)), rd.randint(0, 700)), right_image, left_image))
+            self.monsters.append(Monster((rd.randint(1070, 1070+(30*amount)), rd.randint(0, 700)), right_image, left_image, life))
             #monsters spawn at bot side
-            self.monsters.append(Monster((rd.randint(0, 1000), rd.randint(770, 770+(30*amount))), right_image, left_image))
+            self.monsters.append(Monster((rd.randint(0, 1000), rd.randint(770, 770+(30*amount))), right_image, left_image, life))
 
-    def spawnAllies(self, amount, right_image, left_image):
+    def spawnAllies(self, amount, right_image, left_image, life):
         for i in range(amount):
             side = rd.randint(1, 4)
             if side == 1:
                 #allies spawn at left side
-                self.allies.append(Monster((rd.randint(-(70+(30*amount)), -70), rd.randint(0, 700)), right_image, left_image))
+                self.allies.append(Monster((rd.randint(-(70+(30*amount)), -70), rd.randint(0, 700)), right_image, left_image, life))
             elif side == 2:
                 #allies spawn at top side
-                self.allies.append(Monster((rd.randint(0, 1000), rd.randint(-(70+(30*amount)), -70)), right_image, left_image))
+                self.allies.append(Monster((rd.randint(0, 1000), rd.randint(-(70+(30*amount)), -70)), right_image, left_image, life))
             elif side == 3:
                 #allies spawn at right side
-                self.allies.append(Monster((rd.randint(1070, 1070+(30*amount)), rd.randint(0, 700)), right_image, left_image))
+                self.allies.append(Monster((rd.randint(1070, 1070+(30*amount)), rd.randint(0, 700)), right_image, left_image, life))
             elif side == 4:
                 #allies spawn at bot side
-                self.allies.append(Monster((rd.randint(0, 1000), rd.randint(770, 770+(30*amount))), right_image, left_image))
+                self.allies.append(Monster((rd.randint(0, 1000), rd.randint(770, 770+(30*amount))), right_image, left_image, life))
 
     def showLevelGUI(self):
         screen.blit(pygame.font.SysFont('arial', 200).render("LEVEL " + str(self.level), True, (0, 0, 0)), (SCREEN_WIDTH/2-300, SCREEN_HEIGHT/2-150))
@@ -206,9 +215,9 @@ class Map():
     def changeLevel(self):
         self.level += 1
         player1.addAmmo(self.level*4+4)
-        self.spawnMonsters(game_map.level, poring_right_image, poring_left_image)
+        self.spawnMonsters(game_map.level, poring_right_image, poring_left_image, 1)
         if rd.random() > 0.65:
-            self.spawnAllies(1, angeling_right_images, angeling_left_images)
+            self.spawnAllies(1, angeling_right_images, angeling_left_images, 1)
         self.showGuiLevel = True
         self.start_time = time.time()
 
@@ -224,8 +233,8 @@ poring_left_image = [pygame.image.load('sprites_monsters/poring/left/frame_' + s
 angeling_right_images = [pygame.image.load('sprites_allies/angeling/right/frame_' + str(i) + '_delay-0.15s.png') for i in range(27)]
 angeling_left_images = [pygame.image.load('sprites_allies/angeling/left/frame_' + str(i) + '_delay-0.15s.png') for i in range(27)]
 
-game_map.spawnAllies(1, angeling_right_images, angeling_left_images)
-game_map.spawnMonsters(1, poring_right_image, poring_left_image)
+game_map.spawnAllies(1, angeling_right_images, angeling_left_images, 1)
+game_map.spawnMonsters(1, poring_right_image, poring_left_image, 1)
 
 img_player = pygame.image.load('sprites_player/sprite1_player_0.png')
 player1 = Player((500-70/2, 350-70/2), img_player)
@@ -292,9 +301,12 @@ while inGame:
         else:
             for shot in player1.shots:
                 if shot.is_collided_with(monster):
-                    game_map.monsters.remove(monster)
+                    monster.damageMonster(1)
+                    if monster.isDead():
+                        game_map.monsters.remove(monster)
+                        player1.addScore(100)
                     player1.shots.remove(shot)
-                    player1.addScore(100)
+                    
 
     for allie in game_map.allies:
         allie.move(player1)
@@ -305,10 +317,12 @@ while inGame:
         else:
             for shot in player1.shots:
                 if shot.is_collided_with(allie):
-                    game_map.allies.remove(allie)
+                    allie.damageMonster(1)
+                    if allie.isDead():
+                        game_map.allies.remove(allie)
+                        player1.addScore(-500)
                     player1.shots.remove(shot)
-                    player1.addScore(-500)
-
+                    
     if len(game_map.monsters) == 0 and len(game_map.allies) == 0 and inGame:
         game_map.changeLevel()
 
