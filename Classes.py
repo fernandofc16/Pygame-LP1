@@ -10,16 +10,16 @@ class Images():
 
     def __init__(self):
         self.poring = [[pygame.image.load('sprites_monsters/poring/right/frame_' + str(i) + '_delay-0.1s.png') for i in range(10)],
-                        [pygame.image.load('sprites_monsters/poring/left/frame_' + str(i) + '_delay-0.1s.png') for i in range(10)]]
+                       [pygame.image.load('sprites_monsters/poring/left/frame_' + str(i) + '_delay-0.1s.png') for i in range(10)]]
 
         self.angeling = [[pygame.image.load('sprites_allies/angeling/right/frame_' + str(i) + '_delay-0.15s.png') for i in range(27)],
                          [pygame.image.load('sprites_allies/angeling/left/frame_' + str(i) + '_delay-0.15s.png') for i in range(27)]]
 
-        self.aquaring = [[pygame.transform.scale(pygame.image.load('sprites_monsters/aquaring/right/frame_' + str(i) + '_delay-0.1s.png'), (60, 60)) for i in range(9)],
-                         [pygame.transform.scale(pygame.image.load('sprites_monsters/aquaring/left/frame_' + str(i) + '_delay-0.1s.png'), (60, 60)) for i in range(9)]]
+        self.aquaring = [[pygame.transform.scale(pygame.image.load('sprites_monsters/aquaring/right/frame_' + str(i) + '_delay-0.1s.png'), (50, 50)) for i in range(9)],
+                         [pygame.transform.scale(pygame.image.load('sprites_monsters/aquaring/left/frame_' + str(i) + '_delay-0.1s.png'), (50, 50)) for i in range(9)]]
         
-        self.poporing = [[pygame.transform.scale(pygame.image.load('sprites_monsters/poporing/right/frame_' + str(i) + '_delay-0.1s.png'), (50, 50)) for i in range(4)],
-                         [pygame.transform.scale(pygame.image.load('sprites_monsters/poporing/left/frame_' + str(i) + '_delay-0.1s.png'), (50, 50)) for i in range(4)]]
+        self.poporing = [[pygame.transform.scale(pygame.image.load('sprites_monsters/poporing/right/frame_' + str(i) + '_delay-0.1s.png'), (40, 40)) for i in range(4)],
+                         [pygame.transform.scale(pygame.image.load('sprites_monsters/poporing/left/frame_' + str(i) + '_delay-0.1s.png'), (40, 40)) for i in range(4)]]
 
         self.stapo = [[pygame.transform.scale(pygame.image.load('sprites_monsters/stapo/right/frame_' + str(i) + '_delay-0.1s.png'), (60, 60)) for i in range(13)],
                       [pygame.transform.scale(pygame.image.load('sprites_monsters/stapo/left/frame_' + str(i) + '_delay-0.1s.png'), (60, 60)) for i in range(13)]]
@@ -230,8 +230,12 @@ class Map():
         self.monsters = []
         self.allies = []
         self.level = 1
+        self.quant = 1
         self.showGuiLevel = True
         self.start_time = time.time()
+        self.backgroundIndex = 0
+        self.backgrounds = [pygame.image.load('background_images/floresta.png'), pygame.image.load('background_images/oceano.png'), pygame.image.load('background_images/deserto.png'),
+                            pygame.image.load('background_images/lava.png'), pygame.image.load('background_images/rocha.png')]
 
     def spawnMonsters(self, amount, image, life):
         for i in range(amount):
@@ -265,12 +269,31 @@ class Map():
 
     def changeLevel(self):
         self.level += 1
+        self.backgroundIndex = math.floor(self.level/5-0.1)
+        self.quant += 1
+        if (self.quant-1)%5 == 0:
+            self.quant = 1
         player1.addAmmo(self.level*4+4)
-        self.spawnMonsters(game_map.level, images.getPoringImages(), 1)
+        if self.level <= 5:
+            self.spawnMonsters(self.quant, images.getPoringImages(), 1)
+        elif self.level <= 10:
+            self.spawnMonsters(self.quant, images.getAquaringImages(), 2)
+        elif self.level <= 15:
+            self.spawnMonsters(self.quant, images.getStapoImages(), 3)
+        elif self.level <= 20:
+            self.spawnMonsters(self.quant, images.getMagmaringImages(), 4)
+        elif self.level > 20:
+            self.spawnMonsters(self.quant, images.getDevelingImages(), 5)
+            
         if rd.random() > 0.65:
-            self.spawnAllies(1, images.getAngelingImages(), 1)
+            #self.spawnAllies(1, images.getAngelingImages(), 1)
+            pass
         self.showGuiLevel = True
         self.start_time = time.time()
+
+    def blitBackgroundMap(self, screen):
+        screen.blit(self.backgrounds[self.backgroundIndex], (-13, -10))
+        
 
 pygame.init()
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -297,8 +320,9 @@ win = False
 image = pygame.image.load('sprites_player/sprite' + str(player1.passo) + '_player_' + str(player1.grau) + '.png')
 
 while inGame:
-    pygame.time.Clock().tick(25)
+    pygame.time.Clock().tick(30)
     screen.fill((255, 255, 255))
+    game_map.blitBackgroundMap(screen)
 
     keys = pygame.key.get_pressed()
     if keys[pygame.K_UP]:
@@ -322,6 +346,10 @@ while inGame:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
                 player1.shoot()
+            if event.key == pygame.K_q:                     
+                print('Q PRESSED')
+                for m in game_map.monsters:
+                    game_map.monsters.remove(m)
 
     if player1.grau >= 360:
         player1.grau = 0
