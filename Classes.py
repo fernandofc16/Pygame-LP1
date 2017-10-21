@@ -292,7 +292,7 @@ class Map():
         self.start_time = time.time()
 
     def blitBackgroundMap(self, screen):
-        screen.blit(self.backgrounds[self.backgroundIndex], (-13, -10))
+        screen.blit(self.backgrounds[self.backgroundIndex], (-13, -30))
         
 
 pygame.init()
