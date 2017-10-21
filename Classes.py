@@ -234,8 +234,8 @@ class Map():
         self.showGuiLevel = True
         self.start_time = time.time()
         self.backgroundIndex = 0
-        self.backgrounds = [pygame.image.load('background_images/floresta.png'), pygame.image.load('background_images/oceano.png'), pygame.image.load('background_images/deserto.png'),
-                            pygame.image.load('background_images/lava.png'), pygame.image.load('background_images/rocha.png')]
+        self.backgrounds = [pygame.image.load('background_images/floresta2.png'), pygame.image.load('background_images/floresta3.png'), pygame.image.load('background_images/oceano.png'),
+                            pygame.image.load('background_images/deserto.png'), pygame.image.load('background_images/lava.png'), pygame.image.load('background_images/rocha.png')]
 
     def spawnMonsters(self, amount, image, life):
         for i in range(amount):
@@ -277,13 +277,15 @@ class Map():
         if self.level <= 5:
             self.spawnMonsters(self.quant, images.getPoringImages(), 1)
         elif self.level <= 10:
-            self.spawnMonsters(self.quant, images.getAquaringImages(), 2)
+            self.spawnMonsters(self.quant, images.getPoporingImages(), 2)
         elif self.level <= 15:
-            self.spawnMonsters(self.quant, images.getStapoImages(), 3)
+            self.spawnMonsters(self.quant, images.getAquaringImages(), 3)
         elif self.level <= 20:
-            self.spawnMonsters(self.quant, images.getMagmaringImages(), 4)
-        elif self.level > 20:
-            self.spawnMonsters(self.quant, images.getDevelingImages(), 5)
+            self.spawnMonsters(self.quant, images.getStapoImages(), 4)
+        elif self.level <= 25:
+            self.spawnMonsters(self.quant, images.getMagmaringImages(), 5)
+        elif self.level > 25:
+            self.spawnMonsters(self.quant, images.getDevelingImages(), 6)
             
         if rd.random() > 0.65:
             #self.spawnAllies(1, images.getAngelingImages(), 1)
@@ -341,15 +343,15 @@ while inGame:
         player1.grau = 270
         player1.moveLeft()
         player1.passo += 1
-    
+    elif keys[pygame.K_q]:
+        print('Q PRESSED')
+        for m in game_map.monsters:
+            game_map.monsters.remove(m)
+
     for event in pygame.event.get():
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
                 player1.shoot()
-            if event.key == pygame.K_q:                     
-                print('Q PRESSED')
-                for m in game_map.monsters:
-                    game_map.monsters.remove(m)
 
     if player1.grau >= 360:
         player1.grau = 0
