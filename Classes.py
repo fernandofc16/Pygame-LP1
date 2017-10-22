@@ -105,6 +105,13 @@ class Monster():
         if self.life <= 0:
             return True
         return False
+
+class Bullets():
+
+    def __init__(self):
+        self.position = (rd.randint(0, SCREEN_WIDTH-30), rd.randint(0, SCREEN_HEIGHT-30))
+        self.img = pygame.image.load('sprites_player/bullets.png')
+        self.rect = pygame.Rect(self.position[0], self.position[1], self.img.get_width(), self.img.get_height())
         
 class Player():
 
@@ -120,7 +127,9 @@ class Player():
         self.heartImage = pygame.image.load('sprites_player/heart.png')
         self.shots = []
         self.ammo = 10
-        self.ammoText = pygame.font.SysFont('arial', 21).render("Ammo: " + str(self.ammo), True, (0, 0, 0))
+        self.ammoImage = pygame.image.load('sprites_player/ammo_amount.png')
+        self.ammoText = pygame.font.SysFont('arial', 21).render("Ammo:", True, (0, 0, 0))
+        self.canSpawnBullets = True
         self.score = 0
         self.scoreText = pygame.font.SysFont('arial', 30).render("Score: " + str(self.score), True, (0, 0, 0))
   
@@ -173,7 +182,7 @@ class Player():
         for i in range(1, self.life+1):
             screen.blit(self.heartImage, (20 + 40*i, 10))
 
-    def shoot(self):
+    def shoot(self, game_map):
         if self.ammo > 0:
             self.ammo -= 1
             if player1.grau == 0:
@@ -184,14 +193,17 @@ class Player():
                 self.shots.append(Shot((self.position[0]+40, self.position[1]+40), 'x',  1))
             else:
                 self.shots.append(Shot((self.position[0], self.position[1]+20), 'x', -1))
-            self.ammoText = pygame.font.SysFont('arial', 21).render("Ammo: " + str(self.ammo), True, (0, 0, 0))
+            if self.ammo == 0 and self.canSpawnBullets:
+                game_map.spawnBullets(2)
+                self.canSpawnBullets = False
 
     def showAmmoAmount(self, screen):
         screen.blit(self.ammoText, (7, 50))
+        for i in range(self.ammo):
+            screen.blit(self.ammoImage, (60 + (20*i), 50))
 
     def addAmmo(self, amount):
         self.ammo += amount
-        self.ammoText = pygame.font.SysFont('arial', 21).render("Ammo: " + str(self.ammo), True, (0, 0, 0))
 
     def addScore(self, amount):
         self.score += amount
@@ -229,6 +241,7 @@ class Map():
     def __init__(self):
         self.monsters = []
         self.allies = []
+        self.bullets = []
         self.level = 1
         self.quant = 1
         self.showGuiLevel = True
@@ -266,6 +279,11 @@ class Map():
                 #allies spawn at bot side
                 self.allies.append(Monster((rd.randint(0, 1000), rd.randint(770, 770+(30*amount))), image, life))
 
+    def spawnBullets(self, amount):
+        for i in range(amount):
+            self.bullets.append(Bullets())
+        
+
     def showLevelGUI(self):
         if self.level < 10:
             screen.blit(pygame.font.SysFont('arial', 200).render("LEVEL " + str(self.level), True, (0, 0, 0)), (SCREEN_WIDTH/2-(300), SCREEN_HEIGHT/2-150))
@@ -279,7 +297,7 @@ class Map():
         self.quant += 1
         if (self.quant-1)%5 == 0:
             self.quant = 1
-        player1.addAmmo(self.level*4+4)
+        #player1.addAmmo(self.level*4+4)
         if self.level <= 5:
             self.spawnMonsters(self.quant, images.getPoringImages(), 1)
         elif self.level <= 10:
@@ -296,8 +314,8 @@ class Map():
             self.spawnMonsters(self.quant, images.getDevelingImages(), 6)
             
         if rd.random() > 0.65:
-            #self.spawnAllies(1, images.getAngelingImages(), 1)
-            pass
+            self.spawnAllies(1, images.getAngelingImages(), 1)
+
         self.showGuiLevel = True
         self.start_time = time.time()
 
@@ -359,7 +377,7 @@ while inGame:
     for event in pygame.event.get():
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
-                player1.shoot()
+                player1.shoot(game_map)
 
     if player1.grau >= 360:
         player1.grau = 0
@@ -379,6 +397,14 @@ while inGame:
             player1.shots.remove(shot)
         elif shot.position[1] > SCREEN_HEIGHT or shot.position[1] < 0:
             player1.shots.remove(shot)
+
+    for bullet in game_map.bullets:
+        screen.blit(bullet.img, bullet.position)
+        if player1.is_collided_with(bullet):
+            player1.addAmmo(5)
+            game_map.bullets.remove(bullet)
+            if len(game_map.bullets) == 0:
+                player1.canSpawnBullets = True
     
     for monster in game_map.monsters:
         monster.move(player1)
