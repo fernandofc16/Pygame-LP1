@@ -71,6 +71,8 @@ class Monster():
         self.index = rd.randint(0, len(self.img_right)-1)
         self.animationFrames = len(self.img_right)
         self.life = life
+        self.initialLife = life
+        self.lifeText = pygame.font.SysFont('arial', 21).render(str(self.life) + "/" + str(self.initialLife), True, (0, 0, 0))
 
     def move(self, player):
         if player.position[0]+player.img.get_width()/2 > self.position[0]+self.img_width/2:
@@ -90,6 +92,7 @@ class Monster():
 
     def drawMonster(self, screen):
         #pygame.draw.rect(screen, (0, 0, 0), self.rect) #debug
+        screen.blit(self.lifeText, (self.position[0]+(self.img_width/5), self.position[1]-(self.img_height/2)))
         if self.direction:
             screen.blit(self.img_right[self.index], self.position)
         else:
@@ -100,6 +103,10 @@ class Monster():
 
     def damageMonster(self, amount):
         self.life -= amount
+        if self.life == 1 and self.initialLife > 1:
+            self.lifeText = pygame.font.SysFont('arial', 21).render(str(self.life) + "/" + str(self.initialLife), True, (255, 0, 0))
+        else:
+            self.lifeText = pygame.font.SysFont('arial', 21).render(str(self.life) + "/" + str(self.initialLife), True, (0, 0, 0))
 
     def isDead(self):
         if self.life <= 0:
