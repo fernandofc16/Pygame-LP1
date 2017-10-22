@@ -234,8 +234,10 @@ class Map():
         self.showGuiLevel = True
         self.start_time = time.time()
         self.backgroundIndex = 0
-        self.backgrounds = [pygame.image.load('background_images/floresta2.png'), pygame.image.load('background_images/floresta3.png'), pygame.image.load('background_images/oceano.png'),
-                            pygame.image.load('background_images/deserto.png'), pygame.image.load('background_images/lava.png'), pygame.image.load('background_images/rocha.png')]
+        self.backgrounds = [pygame.image.load('background_images/floresta.png'), pygame.image.load('background_images/floresta_escura.png'),
+                            pygame.image.load('background_images/oceano.png'), pygame.image.load('background_images/deserto.png'),
+                            pygame.image.load('background_images/metal.png'), pygame.image.load('background_images/lava.png'),
+                            pygame.image.load('background_images/rocha.png')]
 
     def spawnMonsters(self, amount, image, life):
         for i in range(amount):
@@ -265,11 +267,15 @@ class Map():
                 self.allies.append(Monster((rd.randint(0, 1000), rd.randint(770, 770+(30*amount))), image, life))
 
     def showLevelGUI(self):
-        screen.blit(pygame.font.SysFont('arial', 200).render("LEVEL " + str(self.level), True, (0, 0, 0)), (SCREEN_WIDTH/2-300, SCREEN_HEIGHT/2-150))
+        if self.level < 10:
+            screen.blit(pygame.font.SysFont('arial', 200).render("LEVEL " + str(self.level), True, (0, 0, 0)), (SCREEN_WIDTH/2-(300), SCREEN_HEIGHT/2-150))
+        else:
+            screen.blit(pygame.font.SysFont('arial', 200).render("LEVEL " + str(self.level), True, (0, 0, 0)), (SCREEN_WIDTH/2-(380), SCREEN_HEIGHT/2-150))
 
     def changeLevel(self):
         self.level += 1
-        self.backgroundIndex = math.floor(self.level/5-0.1)
+        if self.level <= 35:
+            self.backgroundIndex = math.floor(self.level/5-0.1)
         self.quant += 1
         if (self.quant-1)%5 == 0:
             self.quant = 1
@@ -283,8 +289,10 @@ class Map():
         elif self.level <= 20:
             self.spawnMonsters(self.quant, images.getStapoImages(), 4)
         elif self.level <= 25:
+            self.spawnMonsters(self.quant, images.getMetallingImages(), 5)
+        elif self.level <= 30:
             self.spawnMonsters(self.quant, images.getMagmaringImages(), 5)
-        elif self.level > 25:
+        elif self.level > 30:
             self.spawnMonsters(self.quant, images.getDevelingImages(), 6)
             
         if rd.random() > 0.65:
@@ -322,7 +330,7 @@ win = False
 image = pygame.image.load('sprites_player/sprite' + str(player1.passo) + '_player_' + str(player1.grau) + '.png')
 
 while inGame:
-    pygame.time.Clock().tick(30)
+    pygame.time.Clock().tick(60)
     screen.fill((255, 255, 255))
     game_map.blitBackgroundMap(screen)
 
