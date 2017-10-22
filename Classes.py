@@ -57,6 +57,9 @@ class Images():
     def getDevelingImages(self):
         return self.develing
 
+    def changeImagesSize(self, images, size):
+        return [[pygame.transform.scale(images[0][i], size) for i in range(len(images[0]))], [pygame.transform.scale(images[1][i], size) for i in range(len(images[1]))]]
+
 class Monster():
 
     def __init__(self, position, img, life):
@@ -100,6 +103,9 @@ class Monster():
         self.index += 1
         if self.index == self.animationFrames:
             self.index = 0
+
+    def changeMonsterVelocity(self, newVel):
+        self.vel = newVel
 
     def damageMonster(self, amount):
         self.life -= amount
@@ -251,6 +257,7 @@ class Map():
         self.bullets = []
         self.level = 1
         self.quant = 1
+        self.bossTime = True
         self.showGuiLevel = True
         self.start_time = time.time()
         self.backgroundIndex = 0
@@ -269,6 +276,25 @@ class Map():
             self.monsters.append(Monster((rd.randint(1070, 1070+(30*amount)), rd.randint(0, 700)), image, life))
             #monsters spawn at bot side
             self.monsters.append(Monster((rd.randint(0, 1000), rd.randint(770, 770+(30*amount))), image, life))
+
+    def spawnBoss(self):
+        if self.level <= 5:
+            self.spawnMonsters(1, images.changeImagesSize(images.getPoringImages(), (100, 100)), 10)
+        elif self.level <= 10:
+            self.spawnMonsters(1, images.changeImagesSize(images.getPoporingImages(), (100, 100)), 20)
+        elif self.level <= 15:
+            self.spawnMonsters(1, images.changeImagesSize(images.getAquaringImages(), (100, 100)), 30)
+        elif self.level <= 20:
+            self.spawnMonsters(1, images.changeImagesSize(images.getStapoImages(), (100, 100)), 40)
+        elif self.level <= 25:
+            self.spawnMonsters(1, images.changeImagesSize(images.getMetallingImages(), (100, 100)), 50)
+        elif self.level <= 30:
+            self.spawnMonsters(1, images.changeImagesSize(images.getMagmaringImages(), (100, 100)), 60)
+        elif self.level > 30:
+            self.spawnMonsters(1, images.changeImagesSize(images.getDevelingImages(), (100, 100)), 70)
+        for i in range(3):
+            del self.monsters[rd.randint(0, len(self.monsters)-1)]
+        self.monsters[0].changeMonsterVelocity(3)
 
     def spawnAllies(self, amount, image, life):
         for i in range(amount):
@@ -304,6 +330,7 @@ class Map():
         self.quant += 1
         if (self.quant-1)%5 == 0:
             self.quant = 1
+            game_map.bossTime = True
         #player1.addAmmo(self.level*4+4)
         if self.level <= 5:
             self.spawnMonsters(self.quant, images.getPoringImages(), 1)
@@ -380,6 +407,8 @@ while inGame:
         print('Q PRESSED')
         for m in game_map.monsters:
             game_map.monsters.remove(m)
+        for a in game_map.allies:
+            game_map.allies.remove(a)
 
     for event in pygame.event.get():
         if event.type == pygame.KEYDOWN:
@@ -447,7 +476,11 @@ while inGame:
                     player1.shots.remove(shot)
                     
     if len(game_map.monsters) == 0 and len(game_map.allies) == 0 and inGame:
-        game_map.changeLevel()
+        if game_map.level%5 == 0 and game_map.bossTime:
+            game_map.spawnBoss()
+            game_map.bossTime = False
+        else:
+            game_map.changeLevel()
 
     #pygame.draw.rect(screen, (0, 0, 0), player1.rect) #debug
     screen.blit(player1.img, player1.position)
