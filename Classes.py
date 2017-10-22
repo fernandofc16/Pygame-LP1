@@ -62,21 +62,22 @@ class Images():
 
 class Monster():
 
-    def __init__(self, position, img, life):
+    def __init__(self, position, img, life, isBoss):
         self.position = position
         self.img_left = img[0]
         self.img_right = img[1]
         self.img_width = self.img_right[0].get_width()
         self.img_height = self.img_right[0].get_height()
         self.rect = pygame.Rect(position[0]+5, position[1]+5, self.img_width-10, self.img_height-10)
-        self.vel = rd.randint(1, 4)
+        self.vel = rd.randint(1, 3)
         self.direction = 1
         self.index = rd.randint(0, len(self.img_right)-1)
         self.animationFrames = len(self.img_right)
         self.life = life
         self.initialLife = life
         self.lifeText = pygame.font.SysFont('arial', 21).render(str(self.life) + "/" + str(self.initialLife), True, (0, 0, 0))
-
+        self.isBoss = isBoss
+        
     def move(self, player):
         if player.position[0]+player.img.get_width()/2 > self.position[0]+self.img_width/2:
             self.position = (self.position[0]+self.vel, self.position[1])
@@ -266,32 +267,32 @@ class Map():
                             pygame.image.load('background_images/metal.png'), pygame.image.load('background_images/lava.png'),
                             pygame.image.load('background_images/rocha.png')]
 
-    def spawnMonsters(self, amount, image, life):
+    def spawnMonsters(self, amount, image, life, isBoss):
         for i in range(amount):
             #monsters spawn at left side
-            self.monsters.append(Monster((rd.randint(-(70+(30*amount)), -70), rd.randint(0, 700)), image, life))
+            self.monsters.append(Monster((rd.randint(-(70+(30*amount)), -70), rd.randint(0, 700)), image, life, isBoss))
             #monsters spawn at top side
-            self.monsters.append(Monster((rd.randint(0, 1000), rd.randint(-(70+(30*amount)), -70)), image, life))
+            self.monsters.append(Monster((rd.randint(0, 1000), rd.randint(-(70+(30*amount)), -70)), image, life, isBoss))
             #monsters spawn at right side
-            self.monsters.append(Monster((rd.randint(1070, 1070+(30*amount)), rd.randint(0, 700)), image, life))
+            self.monsters.append(Monster((rd.randint(1070, 1070+(30*amount)), rd.randint(0, 700)), image, life, isBoss))
             #monsters spawn at bot side
-            self.monsters.append(Monster((rd.randint(0, 1000), rd.randint(770, 770+(30*amount))), image, life))
+            self.monsters.append(Monster((rd.randint(0, 1000), rd.randint(770, 770+(30*amount))), image, life, isBoss))
 
     def spawnBoss(self):
         if self.level <= 5:
-            self.spawnMonsters(1, images.changeImagesSize(images.getPoringImages(), (100, 100)), 10)
+            self.spawnMonsters(1, images.changeImagesSize(images.getPoringImages(), (100, 100)), 10, True)
         elif self.level <= 10:
-            self.spawnMonsters(1, images.changeImagesSize(images.getPoporingImages(), (100, 100)), 20)
+            self.spawnMonsters(1, images.changeImagesSize(images.getPoporingImages(), (100, 100)), 20, True)
         elif self.level <= 15:
-            self.spawnMonsters(1, images.changeImagesSize(images.getAquaringImages(), (100, 100)), 30)
+            self.spawnMonsters(1, images.changeImagesSize(images.getAquaringImages(), (100, 100)), 30, True)
         elif self.level <= 20:
-            self.spawnMonsters(1, images.changeImagesSize(images.getStapoImages(), (100, 100)), 40)
+            self.spawnMonsters(1, images.changeImagesSize(images.getStapoImages(), (100, 100)), 40, True)
         elif self.level <= 25:
-            self.spawnMonsters(1, images.changeImagesSize(images.getMetallingImages(), (100, 100)), 50)
+            self.spawnMonsters(1, images.changeImagesSize(images.getMetallingImages(), (100, 100)), 50, True)
         elif self.level <= 30:
-            self.spawnMonsters(1, images.changeImagesSize(images.getMagmaringImages(), (100, 100)), 60)
+            self.spawnMonsters(1, images.changeImagesSize(images.getMagmaringImages(), (100, 100)), 60, True)
         elif self.level > 30:
-            self.spawnMonsters(1, images.changeImagesSize(images.getDevelingImages(), (100, 100)), 70)
+            self.spawnMonsters(1, images.changeImagesSize(images.getDevelingImages(), (100, 100)), 70, True)
         for i in range(3):
             del self.monsters[rd.randint(0, len(self.monsters)-1)]
         self.monsters[0].changeMonsterVelocity(3)
@@ -301,16 +302,16 @@ class Map():
             side = rd.randint(1, 4)
             if side == 1:
                 #allies spawn at left side
-                self.allies.append(Monster((rd.randint(-(70+(30*amount)), -70), rd.randint(0, 700)), image, life))
+                self.allies.append(Monster((rd.randint(-(70+(30*amount)), -70), rd.randint(0, 700)), image, life, False))
             elif side == 2:
                 #allies spawn at top side
-                self.allies.append(Monster((rd.randint(0, 1000), rd.randint(-(70+(30*amount)), -70)), image, life))
+                self.allies.append(Monster((rd.randint(0, 1000), rd.randint(-(70+(30*amount)), -70)), image, life, False))
             elif side == 3:
                 #allies spawn at right side
-                self.allies.append(Monster((rd.randint(1070, 1070+(30*amount)), rd.randint(0, 700)), image, life))
+                self.allies.append(Monster((rd.randint(1070, 1070+(30*amount)), rd.randint(0, 700)), image, life, False))
             elif side == 4:
                 #allies spawn at bot side
-                self.allies.append(Monster((rd.randint(0, 1000), rd.randint(770, 770+(30*amount))), image, life))
+                self.allies.append(Monster((rd.randint(0, 1000), rd.randint(770, 770+(30*amount))), image, life, False))
 
     def spawnBullets(self, amount):
         for i in range(amount):
@@ -333,19 +334,19 @@ class Map():
             game_map.bossTime = True
         #player1.addAmmo(self.level*4+4)
         if self.level <= 5:
-            self.spawnMonsters(self.quant, images.getPoringImages(), 1)
+            self.spawnMonsters(self.quant, images.getPoringImages(), 1, False)
         elif self.level <= 10:
-            self.spawnMonsters(self.quant, images.getPoporingImages(), 2)
+            self.spawnMonsters(self.quant, images.getPoporingImages(), 2, False)
         elif self.level <= 15:
-            self.spawnMonsters(self.quant, images.getAquaringImages(), 3)
+            self.spawnMonsters(self.quant, images.getAquaringImages(), 3, False)
         elif self.level <= 20:
-            self.spawnMonsters(self.quant, images.getStapoImages(), 4)
+            self.spawnMonsters(self.quant, images.getStapoImages(), 4, False)
         elif self.level <= 25:
-            self.spawnMonsters(self.quant, images.getMetallingImages(), 5)
+            self.spawnMonsters(self.quant, images.getMetallingImages(), 5, False)
         elif self.level <= 30:
-            self.spawnMonsters(self.quant, images.getMagmaringImages(), 5)
+            self.spawnMonsters(self.quant, images.getMagmaringImages(), 6, False)
         elif self.level > 30:
-            self.spawnMonsters(self.quant, images.getDevelingImages(), 6)
+            self.spawnMonsters(self.quant, images.getDevelingImages(), 7, False)
             
         if rd.random() > 0.65:
             self.spawnAllies(1, images.getAngelingImages(), 1)
@@ -371,7 +372,7 @@ images = Images()
 ##angeling_left_images = [pygame.image.load('sprites_allies/angeling/left/frame_' + str(i) + '_delay-0.15s.png') for i in range(27)]
 
 game_map.spawnAllies(1, images.getAngelingImages(), 1)
-game_map.spawnMonsters(1, images.getPoringImages(), 1)
+game_map.spawnMonsters(1, images.getPoringImages(), 1, False)
 
 img_player = pygame.image.load('sprites_player/sprite1_player_0.png')
 player1 = Player((500-70/2, 350-70/2), img_player)
@@ -446,7 +447,10 @@ while inGame:
         monster.move(player1)
         monster.drawMonster(screen)
         if player1.is_collided_with(monster):
-            player1.damagePlayer(1)
+            if monster.isBoss:
+                player1.damagePlayer(5)
+            else:
+                player1.damagePlayer(1)
             game_map.monsters.remove(monster)
             if(player1.isPlayerDead()):
                 inGame = False
