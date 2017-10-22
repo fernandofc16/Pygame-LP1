@@ -156,6 +156,18 @@ class Player():
     def setRect(self, rect):
         self.rect = rect
 
+    def animatePlayerSprite(self):
+        if player1.grau >= 360:
+            player1.grau = 0
+        if player1.grau < 0:
+            player1.grau = 360 + player1.grau
+
+        if player1.passo > 3:
+            player1.passo = 1
+            
+        image = pygame.image.load('sprites_player/sprite' + str(player1.passo) + '_player_' + str(player1.grau) + '.png')      
+        player1.setImage(image)
+
     def moveUp(self):
         if self.position[1] > 0:
             self.setPosition((self.position[0], self.position[1]-self.vel))
@@ -259,6 +271,8 @@ class Map():
         self.level = 1
         self.quant = 1
         self.bossTime = True
+        self.inGame = True
+        self.win = False
         self.showGuiLevel = True
         self.start_time = time.time()
         self.backgroundIndex = 0
@@ -356,7 +370,99 @@ class Map():
 
     def blitBackgroundMap(self, screen):
         screen.blit(self.backgrounds[self.backgroundIndex], (-13, -30))
-        
+
+    def alliesInteractions(self):
+        for allie in self.allies:
+            allie.move(player1)
+            allie.drawMonster(screen)
+            if player1.is_collided_with(allie):
+                player1.healPlayer(1)
+                self.allies.remove(allie)
+            else:
+                for shot in player1.shots:
+                    if shot.is_collided_with(allie):
+                        allie.damageMonster(1)
+                        if allie.isDead():
+                            self.allies.remove(allie)
+                            player1.addScore(-500)
+                        player1.shots.remove(shot)
+
+    def monstersInteractions(self):
+        for monster in self.monsters:
+            monster.move(player1)
+            monster.drawMonster(screen)
+            if player1.is_collided_with(monster):
+                if monster.isBoss:
+                    player1.damagePlayer(5)
+                else:
+                    player1.damagePlayer(1)
+                self.monsters.remove(monster)
+                if(player1.isPlayerDead()):
+                    self.inGame = False
+            else:
+                for shot in player1.shots:
+                    if shot.is_collided_with(monster):
+                        monster.damageMonster(1)
+                        if monster.isDead():
+                            self.monsters.remove(monster)
+                            player1.addScore(100)
+                        player1.shots.remove(shot)
+
+    def bulletsInteractions(self):
+        for bullet in game_map.bullets:
+            screen.blit(bullet.img, bullet.position)
+            if player1.is_collided_with(bullet):
+                player1.addAmmo(5)
+                self.bullets.remove(bullet)
+                if len(self.bullets) == 0:
+                    player1.canSpawnBullets = True
+
+    def shotsInteractions(self):
+        for shot in player1.shots:
+            shot.move()
+            screen.blit(shot.img, shot.position)
+            if shot.position[0] > SCREEN_WIDTH or shot.position[0] < 0:
+                player1.shots.remove(shot)
+            elif shot.position[1] > SCREEN_HEIGHT or shot.position[1] < 0:
+                player1.shots.remove(shot)
+
+    def checkEvents(self):
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_UP]:
+            player1.grau = 0
+            player1.moveUp()
+            player1.passo += 1
+        elif keys[pygame.K_DOWN]:
+            player1.grau = 180
+            player1.moveDown()
+            player1.passo += 1
+        elif keys[pygame.K_RIGHT]:
+            player1.grau = 90
+            player1.moveRight()
+            player1.passo += 1
+        elif keys[pygame.K_LEFT]:
+            player1.grau = 270
+            player1.moveLeft()
+            player1.passo += 1
+        elif keys[pygame.K_q]:
+            print('Q PRESSED')
+            for m in game_map.monsters:
+                game_map.monsters.remove(m)
+            for a in game_map.allies:
+                game_map.allies.remove(a)
+
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    player1.shoot(game_map)
+
+    def checkEndOfLevel(self):
+        if len(game_map.monsters) == 0 and len(game_map.allies) == 0 and self.inGame:
+            if game_map.level%5 == 0 and game_map.bossTime:
+                game_map.spawnBoss()
+                game_map.bossTime = False
+            else:
+                game_map.changeLevel()
 
 pygame.init()
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -377,114 +483,28 @@ game_map.spawnMonsters(1, images.getPoringImages(), 1, False)
 img_player = pygame.image.load('sprites_player/sprite1_player_0.png')
 player1 = Player((500-70/2, 350-70/2), img_player)
 
-inGame = True
-win = False
+
 
 image = pygame.image.load('sprites_player/sprite' + str(player1.passo) + '_player_' + str(player1.grau) + '.png')
 
-while inGame:
+while game_map.inGame:
     pygame.time.Clock().tick(60)
     screen.fill((255, 255, 255))
     game_map.blitBackgroundMap(screen)
 
-    keys = pygame.key.get_pressed()
-    if keys[pygame.K_UP]:
-        player1.grau = 0
-        player1.moveUp()
-        player1.passo += 1
-    elif keys[pygame.K_DOWN]:
-        player1.grau = 180
-        player1.moveDown()
-        player1.passo += 1
-    elif keys[pygame.K_RIGHT]:
-        player1.grau = 90
-        player1.moveRight()
-        player1.passo += 1
-    elif keys[pygame.K_LEFT]:
-        player1.grau = 270
-        player1.moveLeft()
-        player1.passo += 1
-    elif keys[pygame.K_q]:
-        print('Q PRESSED')
-        for m in game_map.monsters:
-            game_map.monsters.remove(m)
-        for a in game_map.allies:
-            game_map.allies.remove(a)
-
-    for event in pygame.event.get():
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_SPACE:
-                player1.shoot(game_map)
-
-    if player1.grau >= 360:
-        player1.grau = 0
-    if player1.grau < 0:
-        player1.grau = 360 + player1.grau
-
-    if player1.passo > 3:
-        player1.passo = 1
-        
-    image = pygame.image.load('sprites_player/sprite' + str(player1.passo) + '_player_' + str(player1.grau) + '.png')      
-    player1.setImage(image)
-
-    for shot in player1.shots:
-        shot.move()
-        screen.blit(shot.img, shot.position)
-        if shot.position[0] > SCREEN_WIDTH or shot.position[0] < 0:
-            player1.shots.remove(shot)
-        elif shot.position[1] > SCREEN_HEIGHT or shot.position[1] < 0:
-            player1.shots.remove(shot)
-
-    for bullet in game_map.bullets:
-        screen.blit(bullet.img, bullet.position)
-        if player1.is_collided_with(bullet):
-            player1.addAmmo(5)
-            game_map.bullets.remove(bullet)
-            if len(game_map.bullets) == 0:
-                player1.canSpawnBullets = True
+    game_map.checkEvents()
     
-    for monster in game_map.monsters:
-        monster.move(player1)
-        monster.drawMonster(screen)
-        if player1.is_collided_with(monster):
-            if monster.isBoss:
-                player1.damagePlayer(5)
-            else:
-                player1.damagePlayer(1)
-            game_map.monsters.remove(monster)
-            if(player1.isPlayerDead()):
-                inGame = False
-        else:
-            for shot in player1.shots:
-                if shot.is_collided_with(monster):
-                    monster.damageMonster(1)
-                    if monster.isDead():
-                        game_map.monsters.remove(monster)
-                        player1.addScore(100)
-                    player1.shots.remove(shot)
-                    
+    player1.animatePlayerSprite()
 
-    for allie in game_map.allies:
-        allie.move(player1)
-        allie.drawMonster(screen)
-        if player1.is_collided_with(allie):
-            player1.healPlayer(1)
-            game_map.allies.remove(allie)
-        else:
-            for shot in player1.shots:
-                if shot.is_collided_with(allie):
-                    allie.damageMonster(1)
-                    if allie.isDead():
-                        game_map.allies.remove(allie)
-                        player1.addScore(-500)
-                    player1.shots.remove(shot)
+    game_map.shotsInteractions()
+
+    game_map.bulletsInteractions()
+    
+    game_map.monstersInteractions()
                     
-    if len(game_map.monsters) == 0 and len(game_map.allies) == 0 and inGame:
-        if game_map.level%5 == 0 and game_map.bossTime:
-            game_map.spawnBoss()
-            game_map.bossTime = False
-        else:
-            game_map.changeLevel()
+    game_map.alliesInteractions()
+                    
+    game_map.checkEndOfLevel()
 
     #pygame.draw.rect(screen, (0, 0, 0), player1.rect) #debug
     screen.blit(player1.img, player1.position)
@@ -499,7 +519,7 @@ while inGame:
 
     pygame.display.update()
 
-if win:
+if game_map.win:
     screen.blit(pygame.image.load('background_images/you_win.jpg'), (0, 0))
 else: 
     screen.blit(pygame.image.load('background_images/game_over.png'), (0, 0))
