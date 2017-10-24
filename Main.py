@@ -17,10 +17,12 @@ game_map.spawnMonsters(1, game_map.images.getPoringImages(), 1, False)
 
 #image = pygame.image.load('sprites_player/sprite' + str(player1.passo) + '_player_' + str(player1.grau) + '.png')
 
+
 while game_map.inGame:
-    pygame.time.Clock().tick(120)
+    pygame.time.Clock().tick(60)
     game_map.screen.fill((255, 255, 255))
-    game_map.blitBackgroundMap()
+
+    game_map.blitBackgroundMap()    
 
     game_map.checkEvents()
     

@@ -27,10 +27,10 @@ class Map():
         self.showGuiLevel = True
         self.start_time = time.time()
         self.backgroundIndex = 0
-        self.backgrounds = [pygame.image.load('background_images/floresta.png'), pygame.image.load('background_images/floresta_escura.png'),
-                            pygame.image.load('background_images/oceano.png'), pygame.image.load('background_images/deserto.png'),
-                            pygame.image.load('background_images/metal.png'), pygame.image.load('background_images/lava.png'),
-                            pygame.image.load('background_images/rocha.png')]
+        self.backgrounds = [pygame.image.load('background_images/floresta.png').convert_alpha(), pygame.image.load('background_images/floresta_escura.png').convert_alpha(),
+                            pygame.image.load('background_images/oceano.png').convert_alpha(), pygame.image.load('background_images/deserto.png').convert_alpha(),
+                            pygame.image.load('background_images/metal.png').convert_alpha(), pygame.image.load('background_images/lava.png').convert_alpha(),
+                            pygame.image.load('background_images/rocha.png').convert_alpha()]
 
     def spawnMonsters(self, amount, image, life, isBoss):
         for i in range(amount):
