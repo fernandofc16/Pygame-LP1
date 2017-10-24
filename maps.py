@@ -220,3 +220,9 @@ class Map():
                 self.bossTime = False
             else:
                 self.changeLevel()
+
+    def showGuiLevelMap(self):
+        if self.showGuiLevel:
+            if time.time() - self.start_time > 1:
+                self.showGuiLevel = False
+            self.showLevelGUI()

@@ -1,5 +1,5 @@
 import pygame
-from shoots import Shot
+from shots import Shot
 
 SCREEN_HEIGHT = 700
 SCREEN_WIDTH = 1000
@@ -97,7 +97,7 @@ class Player():
             else:
                 self.shots.append(Shot((self.position[0], self.position[1]+20), 'x', -1))
             if self.ammo == 0 and self.canSpawnBullets:
-                game_map.spawnBullets(2)
+                game_map.spawnBullets(4)
                 self.canSpawnBullets = False
 
     def showAmmoAmount(self, screen):

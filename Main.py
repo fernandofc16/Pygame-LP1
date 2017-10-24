@@ -18,7 +18,7 @@ game_map.spawnMonsters(1, game_map.images.getPoringImages(), 1, False)
 #image = pygame.image.load('sprites_player/sprite' + str(player1.passo) + '_player_' + str(player1.grau) + '.png')
 
 while game_map.inGame:
-    pygame.time.Clock().tick(60)
+    pygame.time.Clock().tick(120)
     game_map.screen.fill((255, 255, 255))
     game_map.blitBackgroundMap()
 
@@ -38,11 +38,7 @@ while game_map.inGame:
 
     game_map.showPlayerInfos()
 
-
-    if game_map.showGuiLevel:
-        if time.time() - game_map.start_time > 1:
-            game_map.showGuiLevel = False
-        game_map.showLevelGUI()
+    game_map.showGuiLevelMap()
 
     pygame.display.update()
 
