@@ -19,7 +19,7 @@ game_map.spawnMonsters(1, game_map.images.getPoringImages(), 1, False)
 
 
 while game_map.inGame:
-    pygame.time.Clock().tick(60)
+    pygame.time.Clock().tick(30)
     game_map.screen.fill((255, 255, 255))
 
     game_map.blitBackgroundMap()    
