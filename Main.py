@@ -1,3 +1,4 @@
+import Ranking
 import pygame
 import time
 from maps import Map
@@ -50,3 +51,4 @@ else:
     game_map.screen.blit(pygame.image.load('background_images/game_over.png'), (0, 0))
     
 pygame.display.update()
+Ranking.SetRank(game_map.player.score)
