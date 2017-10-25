@@ -1,1 +1,2 @@
-2017-10-25	||	Matheus Lança	||	3300
+Date		||	Player		||	Score	
+2017-10-25	||	Matheus Lança	||	300

@@ -2,14 +2,13 @@ from datetime import date
 import getpass
 
 def SetRank(score):
-    day = date.today()
-    RankingFile = open("Ranking.txt","w")
-    RankingFile.write(str(day))    
-    RankingFile.write("\t||\t")
-    RankingFile.write(getpass.getuser())
-    RankingFile.write("\t||\t")
-    RankingFile.write("Pontuação:")
-    RankingFile.write(str(score))
-    RankingFile.write("\n")    
-    RankingFile.close()
+    with open("Ranking.txt", "a") as txt:
+        day = date.today()
+        txt.write(str(day))    
+        txt.write("\t||\t")
+        txt.write(getpass.getuser())
+        txt.write("\t||\t")
+        txt.write(str(score))
+        txt.write("\n")    
+        txt.close()
 
