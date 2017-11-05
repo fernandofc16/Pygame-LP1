@@ -23,6 +23,7 @@ class Player():
         self.canSpawnBullets = True
         self.score = 0
         self.scoreText = pygame.font.SysFont('arial', 30).render("Score: " + str(self.score), True, (0, 0, 0))
+        self.shotAudio = pygame.mixer.Sound('audio/shot.wav')
   
     def setPosition(self, position):
         self.position = position
@@ -86,6 +87,7 @@ class Player():
             screen.blit(self.heartImage, (20 + 40*i, 10))
 
     def shoot(self, game_map):
+        self.shotAudio.play()
         if self.ammo > 0:
             self.ammo -= 1
             if self.grau == 0:

@@ -18,6 +18,7 @@ class Monster():
         self.initialLife = life
         self.lifeText = pygame.font.SysFont('arial', 21).render(str(self.life) + "/" + str(self.initialLife), True, (0, 0, 0))
         self.isBoss = isBoss
+        self.dieAudio = pygame.mixer.Sound('audio/poring_die.wav')
         
     def move(self, player):
         if player.position[0]+player.img.get_width()/2 > self.position[0]+self.img_width/2:
@@ -58,5 +59,6 @@ class Monster():
 
     def isDead(self):
         if self.life <= 0:
+            self.dieAudio.play()
             return True
         return False

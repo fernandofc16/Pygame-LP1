@@ -6,6 +6,7 @@ from maps import Map
 Ranking.SetUsername()
 
 pygame.init()
+pygame.mixer.init()
 
 game_map = Map()
 
