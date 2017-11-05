@@ -3,6 +3,8 @@ import pygame
 import time
 from maps import Map
 
+
+
 pygame.init()
 
 game_map = Map()
