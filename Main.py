@@ -3,7 +3,7 @@ import pygame
 import time
 from maps import Map
 
-
+Ranking.SetUsername()
 
 pygame.init()
 
@@ -53,4 +53,6 @@ else:
     game_map.screen.blit(pygame.image.load('background_images/game_over.png'), (0, 0))
     
 pygame.display.update()
-Ranking.SetRank(game_map.player.score)
+Ranking.SetRank(game_map.player.score,game_map.level,Ranking.GetUsername())
+
+Ranking.ShowRanking()
