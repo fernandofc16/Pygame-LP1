@@ -87,8 +87,8 @@ class Player():
             screen.blit(self.heartImage, (20 + 40*i, 10))
 
     def shoot(self, game_map):
-        self.shotAudio.play()
         if self.ammo > 0:
+            self.shotAudio.play()
             self.ammo -= 1
             if self.grau == 0:
                 self.shots.append(Shot((self.position[0]+40, self.position[1]), 'y', -1))
