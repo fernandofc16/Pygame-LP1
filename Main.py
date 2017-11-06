@@ -6,7 +6,7 @@ from maps import Map
 Ranking.SetUsername()
 
 pygame.init()
-pygame.mixer.init()
+pygame.mixer.init(frequency=22050, size=-16, channels=2, buffer=256)
 
 game_map = Map()
 

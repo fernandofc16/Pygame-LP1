@@ -135,6 +135,7 @@ class Map():
             allie.move(self.player)
             allie.drawMonster(self.screen)
             if self.player.is_collided_with(allie):
+                allie.healAudio.play()
                 self.player.healPlayer(1)
                 self.allies.remove(allie)
             else:
@@ -151,6 +152,7 @@ class Map():
             monster.move(self.player)
             monster.drawMonster(self.screen)
             if self.player.is_collided_with(monster):
+                monster.damageAudio.play()
                 if monster.isBoss:
                     self.player.damagePlayer(5)
                 else:
@@ -171,6 +173,7 @@ class Map():
         for bullet in self.bullets:
             self.screen.blit(bullet.img, bullet.position)
             if self.player.is_collided_with(bullet):
+                bullet.reloadAudio.play()
                 self.player.addAmmo(5)
                 self.bullets.remove(bullet)
                 if len(self.bullets) == 0:

@@ -18,7 +18,9 @@ class Monster():
         self.initialLife = life
         self.lifeText = pygame.font.SysFont('arial', 21).render(str(self.life) + "/" + str(self.initialLife), True, (0, 0, 0))
         self.isBoss = isBoss
-        self.dieAudio = pygame.mixer.Sound('audio/poring_die.wav')
+        self.dieAudio = pygame.mixer.Sound('audio/monster_die.wav')
+        self.damageAudio = pygame.mixer.Sound('audio/monster_damage.wav')
+        self.healAudio = pygame.mixer.Sound('audio/allie_heal.wav')
         
     def move(self, player):
         if player.position[0]+player.img.get_width()/2 > self.position[0]+self.img_width/2:
