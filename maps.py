@@ -2,6 +2,7 @@ import pygame
 import time
 import math
 import random as rd
+import Ranking
 from monsters import Monster
 from players import Player
 from images_handler import Images
@@ -232,3 +233,22 @@ class Map():
             if time.time() - self.start_time > 1:
                 self.showGuiLevel = False
             self.showLevelGUI()
+
+    def endOfGame(self):
+        if self.win:
+            self.screen.blit(pygame.image.load('background_images/you_win.jpg'), (0, 0))
+        else: 
+            self.screen.blit(pygame.image.load('background_images/game_over.png'), (0, 0))
+            
+        Ranking.SetRank(self.player.score, self.level, Ranking.GetUsername())
+
+        Ranking.LoadRanking()
+        ranking = Ranking.GetRanking()
+
+        count = 1
+        for score in ranking:
+            self.screen.blit(pygame.font.SysFont('arial', 50).render(str(count) + ". " + score[1] + ": " + score[3] , True, (255, 255, 255)), (50, 300 + (60*count)))
+            count += 1
+            if count > 5: break
+
+        pygame.display.update()

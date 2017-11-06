@@ -1,6 +1,6 @@
-import Ranking
 import pygame
 import time
+import Ranking
 from maps import Map
 
 Ranking.SetUsername()
@@ -22,47 +22,33 @@ game_map.spawnMonsters(1, game_map.images.getPoringImages(), 1, False)
 #image = pygame.image.load('sprites_player/sprite' + str(player1.passo) + '_player_' + str(player1.grau) + '.png')
 
 
-while game_map.inGame:
+while not game_map.windowClosed:
     pygame.time.Clock().tick(30)
     game_map.screen.fill((255, 255, 255))
 
-    game_map.blitBackgroundMap()    
-    
-    game_map.player.animatePlayerSprite()
+    if game_map.inGame:
+        game_map.blitBackgroundMap()    
+        
+        game_map.player.animatePlayerSprite()
 
-    game_map.shotsInteractions()
+        game_map.shotsInteractions()
 
-    game_map.bulletsInteractions()
-    
-    game_map.monstersInteractions()
-                    
-    game_map.alliesInteractions()
-                    
-    game_map.checkEndOfLevel()
+        game_map.bulletsInteractions()
+        
+        game_map.monstersInteractions()
+                        
+        game_map.alliesInteractions()
+                        
+        game_map.checkEndOfLevel()
 
-    game_map.showPlayerInfos()
+        game_map.showPlayerInfos()
 
-    game_map.showGuiLevelMap()
+        game_map.showGuiLevelMap()
 
-    pygame.display.update()
+        pygame.display.update()
+    else:
+        game_map.endOfGame()
 
     game_map.checkEvents()
 
-if not game_map.windowClosed:
-    if game_map.win:
-        game_map.screen.blit(pygame.image.load('background_images/you_win.jpg'), (0, 0))
-    else: 
-        game_map.screen.blit(pygame.image.load('background_images/game_over.png'), (0, 0))
-        
-    Ranking.SetRank(game_map.player.score, game_map.level, Ranking.GetUsername())
-
-    Ranking.LoadRanking()
-    ranking = Ranking.GetRanking()
-
-    count = 1
-    for score in ranking:
-        game_map.screen.blit(pygame.font.SysFont('arial', 50).render(str(count) + ". " + score[1] + ": " + score[3] , True, (255, 255, 255)), (50, 300 + (60*count)))
-        count += 1
-        if count > 5: break
-
-    pygame.display.update()
+    
