@@ -27,8 +27,6 @@ while game_map.inGame:
     game_map.screen.fill((255, 255, 255))
 
     game_map.blitBackgroundMap()    
-
-    game_map.checkEvents()
     
     game_map.player.animatePlayerSprite()
 
@@ -48,12 +46,23 @@ while game_map.inGame:
 
     pygame.display.update()
 
-if game_map.win:
-    game_map.screen.blit(pygame.image.load('background_images/you_win.jpg'), (0, 0))
-else: 
-    game_map.screen.blit(pygame.image.load('background_images/game_over.png'), (0, 0))
-    
-pygame.display.update()
-Ranking.SetRank(game_map.player.score,game_map.level,Ranking.GetUsername())
+    game_map.checkEvents()
 
-Ranking.ShowRanking()
+if not game_map.windowClosed:
+    if game_map.win:
+        game_map.screen.blit(pygame.image.load('background_images/you_win.jpg'), (0, 0))
+    else: 
+        game_map.screen.blit(pygame.image.load('background_images/game_over.png'), (0, 0))
+        
+    Ranking.SetRank(game_map.player.score, game_map.level, Ranking.GetUsername())
+
+    Ranking.LoadRanking()
+    ranking = Ranking.GetRanking()
+
+    count = 1
+    for score in ranking:
+        game_map.screen.blit(pygame.font.SysFont('arial', 50).render(str(count) + ". " + score[1] + ": " + score[3] , True, (255, 255, 255)), (50, 300 + (60*count)))
+        count += 1
+        if count > 5: break
+
+    pygame.display.update()

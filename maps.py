@@ -24,6 +24,7 @@ class Map():
         self.bossTime = True
         self.inGame = True
         self.win = False
+        self.windowClosed = False
         self.showGuiLevel = True
         self.start_time = time.time()
         self.backgroundIndex = 0
@@ -205,10 +206,15 @@ class Map():
             print('Q PRESSED')
             for m in self.monsters:
                 self.monsters.remove(m)
+                self.player.addScore(200)
             for a in self.allies:
                 self.allies.remove(a)
 
         for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                self.inGame = False
+                self.windowClosed = True
+                pygame.quit()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
                     self.player.shoot(self)
