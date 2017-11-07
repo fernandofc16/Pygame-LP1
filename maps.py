@@ -27,6 +27,8 @@ class Map():
         self.win = False
         self.windowClosed = False
         self.showGuiLevel = True
+        self.ranking = []
+        self.setRank = True
         self.start_time = time.time()
         self.backgroundIndex = 0
         self.backgrounds = [pygame.image.load('background_images/floresta.png').convert_alpha(), pygame.image.load('background_images/floresta_escura.png').convert_alpha(),
@@ -242,15 +244,16 @@ class Map():
             self.screen.blit(pygame.image.load('background_images/you_win.jpg'), (0, 0))
         else: 
             self.screen.blit(pygame.image.load('background_images/game_over.png'), (0, 0))
-            
-        Ranking.SetRank(self.player.score, self.level, Ranking.GetUsername())
 
-        Ranking.LoadRanking()
-        ranking = Ranking.GetRanking()
+        if self.setRank:    
+            Ranking.SetRank(self.player.score, self.level, Ranking.GetUsername())
+            Ranking.LoadRanking()
+            self.ranking = Ranking.GetRanking()
+            self.setRank = False
 
         count = 1
-        for score in ranking:
-            self.screen.blit(pygame.font.SysFont('arial', 50).render(str(count) + ". " + score[1] + ": " + score[3] , True, (255, 255, 255)), (50, 300 + (60*count)))
+        for score in self.ranking:
+            self.screen.blit(pygame.font.SysFont('arial', 30).render(str(count) + ". " + score[1] + " Level: " + score[2] + " Score: " + score[3] , True, (255, 255, 255)), (50, 300 + (60*count)))
             count += 1
             if count > 5: break
 
