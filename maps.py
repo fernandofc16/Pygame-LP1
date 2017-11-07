@@ -26,11 +26,15 @@ class Map():
         self.inGame = True
         self.win = False
         self.windowClosed = False
+        self.initialScreen = True
         self.showGuiLevel = True
         self.ranking = []
         self.setRank = True
         self.start_time = time.time()
         self.backgroundIndex = 0
+        self.winBackgroundImage = pygame.image.load('background_images/you_win.jpg')
+        self.gameOverBackgroundImage = pygame.image.load('background_images/game_over.png')
+        self.initialBackgroundImage = pygame.image.load('background_images/initial.jpg')
         self.backgrounds = [pygame.image.load('background_images/floresta.png').convert_alpha(), pygame.image.load('background_images/floresta_escura.png').convert_alpha(),
                             pygame.image.load('background_images/oceano.png').convert_alpha(), pygame.image.load('background_images/deserto.png').convert_alpha(),
                             pygame.image.load('background_images/metal.png').convert_alpha(), pygame.image.load('background_images/lava.png').convert_alpha(),
@@ -224,6 +228,9 @@ class Map():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
                     self.player.shoot(self)
+            if event.type == pygame.MOUSEBUTTONUP:
+                pos = pygame.mouse.get_pos()
+                print(pos)
 
     def checkEndOfLevel(self):
         if len(self.monsters) == 0 and len(self.allies) == 0 and self.inGame:
@@ -241,9 +248,9 @@ class Map():
 
     def endOfGame(self):
         if self.win:
-            self.screen.blit(pygame.image.load('background_images/you_win.jpg'), (0, 0))
+            self.screen.blit(self.winBackgroundImage, (0, 0))
         else: 
-            self.screen.blit(pygame.image.load('background_images/game_over.png'), (0, 0))
+            self.screen.blit(self.gameOverBackgroundImage, (0, 0))
 
         if self.setRank:    
             Ranking.SetRank(self.player.score, self.level, Ranking.GetUsername())
@@ -258,3 +265,17 @@ class Map():
             if count > 5: break
 
         pygame.display.update()
+
+    def initalScreen(self):
+        self.screen.blit(self.initialBackgroundImage, (0, 0))
+        pygame.display.update()
+        
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                self.inGame = False
+                self.windowClosed = True
+                pygame.quit()
+            if event.type == pygame.MOUSEBUTTONUP:
+                pos = pygame.mouse.get_pos()
+                if(pos[0] >= 410 and pos[0] <= 630 and pos[1] >= 625 and pos[1] <= 690):
+                    self.initialScreen = False

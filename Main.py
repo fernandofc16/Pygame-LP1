@@ -29,7 +29,9 @@ while not game_map.windowClosed:
     pygame.time.Clock().tick(30)
     game_map.screen.fill((255, 255, 255))
 
-    if game_map.inGame:
+    if game_map.initialScreen:
+        game_map.initalScreen()
+    elif game_map.inGame:
         game_map.blitBackgroundMap()    
         
         game_map.player.animatePlayerSprite()
