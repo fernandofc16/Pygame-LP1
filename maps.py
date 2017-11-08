@@ -33,7 +33,7 @@ class Map():
         self.start_time = time.time()
         self.backgroundIndex = 0
         self.winBackgroundImage = pygame.image.load('background_images/you_win.jpg')
-        self.gameOverBackgroundImage = pygame.image.load('background_images/game_over.png')
+        self.gameOverBackgroundImage = pygame.image.load('background_images/game_over.jpg')
         self.initialBackgroundImage = pygame.image.load('background_images/initial.jpg')
         self.backgrounds = [pygame.image.load('background_images/floresta.png').convert_alpha(), pygame.image.load('background_images/floresta_escura.png').convert_alpha(),
                             pygame.image.load('background_images/oceano.png').convert_alpha(), pygame.image.load('background_images/deserto.png').convert_alpha(),
@@ -242,7 +242,7 @@ class Map():
 
     def showGuiLevelMap(self):
         if self.showGuiLevel:
-            if time.time() - self.start_time > 1:
+            if time.time() - self.start_time > 2.2:
                 self.showGuiLevel = False
             self.showLevelGUI()
 
@@ -260,7 +260,7 @@ class Map():
 
         count = 1
         for score in self.ranking:
-            self.screen.blit(pygame.font.SysFont('arial', 30).render(str(count) + ". " + score[1] + " Level: " + score[2] + " Score: " + score[3] , True, (255, 255, 255)), (50, 300 + (60*count)))
+            self.screen.blit(pygame.font.SysFont('arial', 45).render(str(count) + ". " + score[1] + " Level: " + score[2] + " Score: " + score[3] , True, (255, 255, 255)), (50, 170 + (70*count)))
             count += 1
             if count > 5: break
 
