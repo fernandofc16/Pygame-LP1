@@ -6,9 +6,9 @@ class Shot():
         self.position = position
         self.eixo = eixo
         if eixo == 'x':
-            self.img = pygame.image.load('sprites_player/shotX.png')
+            self.img = pygame.transform.scale(pygame.image.load('sprites_player/rock_shoot.png'), (12,12))
         else:
-            self.img = pygame.image.load('sprites_player/shotY.png')
+            self.img = pygame.transform.scale(pygame.image.load('sprites_player/rock_shoot.png'), (12,12))
         
         self.rect = pygame.Rect(position[0], position[1], self.img.get_width(), self.img.get_height())
         self.vel = vel * 30

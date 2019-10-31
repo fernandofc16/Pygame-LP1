@@ -19,8 +19,8 @@ game_map = Map()
 ##angeling_right_images = [pygame.image.load('sprites_allies/angeling/right/frame_' + str(i) + '_delay-0.15s.png') for i in range(27)]
 ##angeling_left_images = [pygame.image.load('sprites_allies/angeling/left/frame_' + str(i) + '_delay-0.15s.png') for i in range(27)]
 
-game_map.spawnAllies(1, game_map.images.getAngelingImages(), 1)
-game_map.spawnMonsters(1, game_map.images.getHamburguerImages(), 1, False)
+game_map.spawnAllies(1, game_map, 1)
+game_map.spawnMonsters(2, game_map, 1, False)
 
 #image = pygame.image.load('sprites_player/sprite' + str(player1.passo) + '_player_' + str(player1.grau) + '.png')
 
@@ -63,8 +63,8 @@ while not game_map.windowClosed:
                 pos = pygame.mouse.get_pos()
                 if(pos[0] >= 380 and pos[0] <= 600 and pos[1] >= 630 and pos[1] <= 690):
                     game_map = Map()
-                    game_map.spawnAllies(1, game_map.images.getAngelingImages(), 1)
-                    game_map.spawnMonsters(1, game_map.images.getHamburguerImages(), 1, False)
+                    game_map.spawnAllies(1, game_map, 1)
+                    game_map.spawnMonsters(1, game_map, 1, False)
 
     game_map.checkEvents()
 

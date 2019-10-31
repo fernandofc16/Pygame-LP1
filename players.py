@@ -14,12 +14,12 @@ class Player():
         self.passo = 1
         self.vel = 7
         self.life = 5
-        self.heartText = pygame.font.SysFont('arial', 30).render("Life: ", True, (0, 0, 0))
+        self.heartText = pygame.font.SysFont('arial', 30).render("Saúde: ", True, (0, 0, 0))
         self.heartImage = pygame.image.load('sprites_player/heart.png')
         self.shots = []
         self.ammo = 10
-        self.ammoImage = pygame.image.load('sprites_player/ammo_amount.png')
-        self.ammoText = pygame.font.SysFont('arial', 21).render("Ammo:", True, (0, 0, 0))
+        self.ammoImage = pygame.transform.scale(pygame.image.load('sprites_player/rock_gameplay.png'), (20,20))
+        self.ammoText = pygame.font.SysFont('arial', 21).render("Munição:", True, (0, 0, 0))
         self.canSpawnBullets = True
         self.score = 0
         self.scoreText = pygame.font.SysFont('arial', 30).render("Score: " + str(self.score), True, (0, 0, 0))
@@ -84,7 +84,7 @@ class Player():
     def showLife(self, screen):
         screen.blit(self.heartText, (7, 7))
         for i in range(1, self.life+1):
-            screen.blit(self.heartImage, (20 + 40*i, 10))
+            screen.blit(self.heartImage, (50 + 40*i, 10))
 
     def shoot(self, game_map):
         if self.ammo > 0:
@@ -105,7 +105,7 @@ class Player():
     def showAmmoAmount(self, screen):
         screen.blit(self.ammoText, (7, 50))
         for i in range(self.ammo):
-            screen.blit(self.ammoImage, (60 + (20*i), 50))
+            screen.blit(self.ammoImage, (85 + (25*i), 55))
 
     def addAmmo(self, amount):
         self.ammo += amount
