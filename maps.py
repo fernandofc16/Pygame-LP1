@@ -40,8 +40,16 @@ class Map():
                             pygame.image.load('background_images/metal.png').convert_alpha(), pygame.image.load('background_images/lava.png').convert_alpha(),
                             pygame.image.load('background_images/rocha.png').convert_alpha()]
 
-    def spawnMonsters(self, amount, image, life, isBoss):
+    def spawnMonsters(self, amount, game_map, life, isBoss):
         for i in range(amount):
+            randmonster = rd.randint(1,3)
+            if randmonster == 1:
+                image = game_map.images.getHamburguers()
+            elif randmonster == 2:
+                image = game_map.images.getKikats()
+            elif randmonster == 3:
+                image = game_map.images.getNutellas()
+                
             #monsters spawn at left side
             self.monsters.append(Monster((rd.randint(-(70+(30*amount)), -70), rd.randint(0, 700)), image, life, isBoss))
             #monsters spawn at top side
@@ -70,21 +78,25 @@ class Map():
             del self.monsters[rd.randint(0, len(self.monsters)-1)]
         self.monsters[0].changeMonsterVelocity(3)
 
-    def spawnAllies(self, amount, image, life):
+    def spawnAllies(self, amount, game_map, life):
         for i in range(amount):
-            side = rd.randint(1, 4)
-            if side == 1:
-                #allies spawn at left side
-                self.allies.append(Monster((rd.randint(-(70+(30*amount)), -70), rd.randint(0, 700)), image, life, False))
-            elif side == 2:
-                #allies spawn at top side
-                self.allies.append(Monster((rd.randint(0, 1000), rd.randint(-(70+(30*amount)), -70)), image, life, False))
-            elif side == 3:
-                #allies spawn at right side
-                self.allies.append(Monster((rd.randint(1070, 1070+(30*amount)), rd.randint(0, 700)), image, life, False))
-            elif side == 4:
-                #allies spawn at bot side
-                self.allies.append(Monster((rd.randint(0, 1000), rd.randint(770, 770+(30*amount))), image, life, False))
+            randallies = rd.randint(1,3)
+            if randallies == 1:
+                image = game_map.images.getErvilhas()
+            elif randallies == 2:
+                image = game_map.images.getLaranjas()
+            elif randallies == 3:
+                image = game_map.images.getMelancias()
+            elif randallies == 4:
+                image = game_map.images.getTomates()
+            #allies spawn at left side
+            self.allies.append(Monster((rd.randint(-(70+(30*amount)), -70), rd.randint(0, 700)), image, life, False))
+            #allies spawn at top side
+            self.allies.append(Monster((rd.randint(0, 1000), rd.randint(-(70+(30*amount)), -70)), image, life, False))
+            #allies spawn at right side
+            self.allies.append(Monster((rd.randint(1070, 1070+(30*amount)), rd.randint(0, 700)), image, life, False))
+            #allies spawn at bot side
+            self.allies.append(Monster((rd.randint(0, 1000), rd.randint(770, 770+(30*amount))), image, life, False))
 
     def spawnBullets(self, amount):
         for i in range(amount):
