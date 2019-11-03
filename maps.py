@@ -119,28 +119,15 @@ class Map():
         self.level += 1
         if self.level <= 35:
             self.backgroundIndex = math.floor(self.level/5-0.1)
-        self.quant += 1
+        if self.level % 3 == 0:
+            self.quant += 1
         if (self.quant-1)%5 == 0:
             self.quant = 1
             self.bossTime = True
         #player1.addAmmo(self.level*4+4)
-        if self.level <= 5:
-            self.spawnMonsters(self.quant, self.images.getPoringImages(), 1, False)
-        elif self.level <= 10:
-            self.spawnMonsters(self.quant, self.images.getPoporingImages(), 2, False)
-        elif self.level <= 15:
-            self.spawnMonsters(self.quant, self.images.getAquaringImages(), 3, False)
-        elif self.level <= 20:
-            self.spawnMonsters(self.quant, self.images.getStapoImages(), 4, False)
-        elif self.level <= 25:
-            self.spawnMonsters(self.quant, self.images.getMetallingImages(), 5, False)
-        elif self.level <= 30:
-            self.spawnMonsters(self.quant, self.images.getMagmaringImages(), 6, False)
-        elif self.level > 30:
-            self.spawnMonsters(self.quant, self.images.getDevelingImages(), 7, False)
+        self.spawnMonsters(self.quant, self, 1, False)
             
-        if rd.random() > 0.65:
-            self.spawnAllies(1, self.images.getAngelingImages(), 1)
+        self.spawnAllies(self.quant, self, 1)
 
         self.showGuiLevel = True
         self.start_time = time.time()

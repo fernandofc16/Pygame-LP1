@@ -22,6 +22,8 @@ game_map = Map()
 game_map.spawnAllies(1, game_map, 1)
 game_map.spawnMonsters(2, game_map, 1, False)
 
+#game_map.changeLevel()
+
 #image = pygame.image.load('sprites_player/sprite' + str(player1.passo) + '_player_' + str(player1.grau) + '.png')
 
 
