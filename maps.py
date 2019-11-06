@@ -34,7 +34,7 @@ class Map():
         self.backgroundIndex = 0
         self.winBackgroundImage = pygame.image.load('background_images/you_win.jpg')
         self.gameOverBackgroundImage = pygame.image.load('background_images/game_over.jpg')
-        self.initialBackgroundImage = pygame.image.load('background_images/initial.jpg')
+        self.initialBackgroundImage = pygame.image.load('background_images/inicial.png')
         self.backgrounds = [pygame.image.load('background_images/floresta.png').convert_alpha(), pygame.image.load('background_images/floresta_escura.png').convert_alpha(),
                             pygame.image.load('background_images/oceano.png').convert_alpha(), pygame.image.load('background_images/deserto.png').convert_alpha(),
                             pygame.image.load('background_images/metal.png').convert_alpha(), pygame.image.load('background_images/lava.png').convert_alpha(),
@@ -60,20 +60,7 @@ class Map():
             self.monsters.append(Monster((rd.randint(0, 1000), rd.randint(770, 770+(30*amount))), image, life, isBoss))
 
     def spawnBoss(self):
-        if self.level <= 5:
-            self.spawnMonsters(1, self.images.changeImagesSize(self.images.getPoringImages(), (100, 100)), 10, True)
-        elif self.level <= 10:
-            self.spawnMonsters(1, self.images.changeImagesSize(self.images.getPoporingImages(), (100, 100)), 20, True)
-        elif self.level <= 15:
-            self.spawnMonsters(1, self.images.changeImagesSize(self.images.getAquaringImages(), (100, 100)), 30, True)
-        elif self.level <= 20:
-            self.spawnMonsters(1, self.images.changeImagesSize(self.images.getStapoImages(), (100, 100)), 40, True)
-        elif self.level <= 25:
-            self.spawnMonsters(1, self.images.changeImagesSize(self.images.getMetallingImages(), (100, 100)), 50, True)
-        elif self.level <= 30:
-            self.spawnMonsters(1, self.images.changeImagesSize(self.images.getMagmaringImages(), (100, 100)), 60, True)
-        elif self.level > 30:
-            self.spawnMonsters(1, self.images.changeImagesSize(self.images.getDevelingImages(), (100, 100)), 70, True)
+        self.spawnMonsters(1, self, self.level*3, True)
         for i in range(3):
             del self.monsters[rd.randint(0, len(self.monsters)-1)]
         self.monsters[0].changeMonsterVelocity(3)
@@ -118,29 +105,16 @@ class Map():
     def changeLevel(self):
         self.level += 1
         if self.level <= 35:
-            self.backgroundIndex = math.floor(self.level/5-0.1)
-        self.quant += 1
+            self.backgroundIndex = 0
+        if self.level % 3 == 0:
+            self.quant += 1
         if (self.quant-1)%5 == 0:
             self.quant = 1
             self.bossTime = True
         #player1.addAmmo(self.level*4+4)
-        if self.level <= 5:
-            self.spawnMonsters(self.quant, self.images.getPoringImages(), 1, False)
-        elif self.level <= 10:
-            self.spawnMonsters(self.quant, self.images.getPoporingImages(), 2, False)
-        elif self.level <= 15:
-            self.spawnMonsters(self.quant, self.images.getAquaringImages(), 3, False)
-        elif self.level <= 20:
-            self.spawnMonsters(self.quant, self.images.getStapoImages(), 4, False)
-        elif self.level <= 25:
-            self.spawnMonsters(self.quant, self.images.getMetallingImages(), 5, False)
-        elif self.level <= 30:
-            self.spawnMonsters(self.quant, self.images.getMagmaringImages(), 6, False)
-        elif self.level > 30:
-            self.spawnMonsters(self.quant, self.images.getDevelingImages(), 7, False)
+        self.spawnMonsters(self.quant, self, 1, False)
             
-        if rd.random() > 0.65:
-            self.spawnAllies(1, self.images.getAngelingImages(), 1)
+        self.spawnAllies(self.quant, self, 1)
 
         self.showGuiLevel = True
         self.start_time = time.time()

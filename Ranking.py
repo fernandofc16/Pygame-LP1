@@ -5,7 +5,7 @@ rank = []
 
 def SetUsername():
     global name
-    name = input("USERNAME: ")
+    name = input("DIGITE O SEU NOME/NICK: ")
 
 def GetUsername():
     return name

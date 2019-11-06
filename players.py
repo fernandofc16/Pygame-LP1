@@ -23,7 +23,7 @@ class Player():
         self.canSpawnBullets = True
         self.score = 0
         self.scoreText = pygame.font.SysFont('arial', 30).render("Score: " + str(self.score), True, (0, 0, 0))
-        self.shotAudio = pygame.mixer.Sound('audio/shot.wav')
+        self.shotAudio = pygame.mixer.Sound('audio/slingshot.wav')
   
     def setPosition(self, position):
         self.position = position

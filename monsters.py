@@ -20,7 +20,7 @@ class Monster():
         self.isBoss = isBoss
         self.dieAudio = pygame.mixer.Sound('audio/monster_die.wav')
         self.damageAudio = pygame.mixer.Sound('audio/monster_damage.wav')
-        self.healAudio = pygame.mixer.Sound('audio/allie_heal.wav')
+        self.healAudio = pygame.mixer.Sound('audio/20279__koops__apple-crunch-16.wav')
         
     def move(self, player):
         if player.position[0]+player.img.get_width()/2 > self.position[0]+self.img_width/2:

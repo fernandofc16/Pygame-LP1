@@ -6,9 +6,6 @@ class Images():
         self.poring = [[pygame.image.load('sprites_monsters/poring/right/frame_' + str(i) + '_delay-0.1s.png') for i in range(10)],
                        [pygame.image.load('sprites_monsters/poring/left/frame_' + str(i) + '_delay-0.1s.png') for i in range(10)]]
 
-        self.angeling = [[pygame.image.load('sprites_allies/angeling/right/frame_' + str(i) + '_delay-0.15s.png') for i in range(27)],
-                         [pygame.image.load('sprites_allies/angeling/left/frame_' + str(i) + '_delay-0.15s.png') for i in range(27)]]
-
         self.hamburguer = [[pygame.transform.scale(pygame.image.load('sprites_monsters/Hamburguer/frame_' + str(i) + '_delay-0.12s.png'), (50, 50)) for i in range(1,8)],
                            [pygame.transform.scale(pygame.image.load('sprites_monsters/Hamburguer/frame_' + str(i) + '_delay-0.12s.png'), (50, 50)) for i in range(1,8)]]
 
